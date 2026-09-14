@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>RetinaAI — AI Diabetic Retinopathy Screening</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+```
+
+</head>
+
+<body>
+
+```
+<!-- Background -->
+<div class="background-grid"></div>
+<div class="glow glow-one"></div>
+<div class="glow glow-two"></div>
+
+<!-- ================= NAVBAR ================= -->
+
+<header class="navbar">
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            <span>◉</span>
+        </div>
+
+        <div class="logo-text">
+            <h2>Retina<span>AI</span></h2>
+            <p>Intelligent Retinal Screening</p>
+        </div>
+
+    </div>
+
+    <div class="nav-right">
+
+        <div class="system-status">
+            <span class="status-dot"></span>
+
+            <div>
+                <strong>AI System</strong>
+                <small>Online & Ready</small>
+            </div>
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="container">
+
+    <!-- ================= HERO ================= -->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <div class="hero-badge">
+                <span class="spark">✦</span>
+                AI-ASSISTED MEDICAL SCREENING
+            </div>
+
+            <h1>
+                See Beyond the
+                <span>Surface.</span>
+            </h1>
+
+            <p>
+                Upload a retinal fundus photograph and let our
+                AI-powered screening pipeline analyze diabetic
+                retinopathy severity in seconds.
+            </p>
+
+            <div class="hero-stats">
+
+                <div class="hero-stat">
+                    <strong>5</strong>
+                    <span>DR Classes</span>
+                </div>
+
+                <div class="stat-divider"></div>
+
+                <div class="hero-stat">
+                    <strong>224×224</strong>
+                    <span>AI Input</span>
+                </div>
+
+                <div class="stat-divider"></div>
+
+                <div class="hero-stat">
+                    <strong>AI</strong>
+                    <span>EfficientNet-B0</span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="hero-visual">
+
+            <div class="retina-orbit orbit-one"></div>
+            <div class="retina-orbit orbit-two"></div>
+
+            <div class="retina-core">
+
+                <div class="retina-ring"></div>
+
+                <div class="retina-eye">
+                    ◉
+                </div>
+
+                <div class="scan-line"></div>
+
+            </div>
+
+            <div class="floating-card floating-card-one">
+                <span class="floating-icon">✦</span>
+                <div>
+                    <strong>AI Analysis</strong>
+                    <small>Ready</small>
+                </div>
+            </div>
+
+            <div class="floating-card floating-card-two">
+                <span class="floating-icon">✓</span>
+                <div>
+                    <strong>Real-time</strong>
+                    <small>Screening</small>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= WORKFLOW ================= -->
+
+    <div class="workflow">
+
+        <div class="workflow-step active">
+            <span>01</span>
+            <div>
+                <strong>Patient</strong>
+                <small>Information</small>
+            </div>
+        </div>
+
+        <div class="workflow-line"></div>
+
+        <div class="workflow-step">
+            <span>02</span>
+            <div>
+                <strong>Retinal</strong>
+                <small>Image</small>
+            </div>
+        </div>
+
+        <div class="workflow-line"></div>
+
+        <div class="workflow-step">
+            <span>03</span>
+            <div>
+                <strong>AI</strong>
+                <small>Assessment</small>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ================= PATIENT INFORMATION ================= -->
+
+    <section class="card patient-card">
+
+        <div class="section-header">
+
+            <div class="section-title">
+
+                <div class="section-icon blue-icon">
+                    ♙
+                </div>
+
+                <div>
+                    <span class="eyebrow">STEP 01</span>
+                    <h2>Patient Information</h2>
+                    <p>Enter basic information to identify this screening.</p>
+                </div>
+
+            </div>
+
+            <div class="section-number">
+                01
+            </div>
+
+        </div>
+
+
+        <div class="form-grid">
+
+            <div class="form-group">
+
+                <label for="patientName">
+                    Patient Name
+                </label>
+
+                <div class="input-wrapper">
+
+                    <span class="input-icon">◯</span>
+
+                    <input
+                        type="text"
+                        id="patientName"
+                        placeholder="Enter patient name"
+                        autocomplete="off"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="patientId">
+                    Patient ID
+                </label>
+
+                <div class="input-wrapper">
+
+                    <span class="input-icon">#</span>
+
+                    <input
+                        type="text"
+                        id="patientId"
+                        placeholder="e.g. PT-2026-001"
+                        autocomplete="off"
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= RETINAL IMAGE ================= -->
+
+    <section class="card image-card">
+
+        <div class="section-header">
+
+            <div class="section-title">
+
+                <div class="section-icon purple-icon">
+                    ◉
+                </div>
+
+                <div>
+                    <span class="eyebrow">STEP 02</span>
+                    <h2>Retinal Image</h2>
+                    <p>Upload a clear fundus photograph for AI screening.</p>
+                </div>
+
+            </div>
+
+            <div class="section-number">
+                02
+            </div>
+
+        </div>
+
+
+        <!-- UPLOAD AREA -->
+
+        <div
+            class="drop-zone"
+            id="dropZone"
+        >
+
+            <div
+                id="uploadContent"
+                class="upload-content"
+            >
+
+                <div class="upload-visual">
+
+                    <div class="upload-ring">
+                        <div class="upload-arrow">
+                            ↑
+                        </div>
+                    </div>
+
+                </div>
+
+                <h3>
+                    Drop your retinal image here
+                </h3>
+
+                <p>
+                    Drag & drop your fundus photograph
+                    or select it from your computer.
+                </p>
+
+
+                <input
+                    type="file"
+                    id="imageInput"
+                    accept="image/png,image/jpeg,image/jpg"
+                    hidden
+                >
+
+
+                <button
+                    type="button"
+                    class="browse-btn"
+                    id="browseButton"
+                >
+                    <span>＋</span>
+                    Browse Image
+                </button>
+
+
+                <div class="upload-meta">
+
+                    <span>
+                        ✓ JPG
+                    </span>
+
+                    <span>
+                        ✓ JPEG
+                    </span>
+
+                    <span>
+                        ✓ PNG
+                    </span>
+
+                    <span>
+                        · Max 15 MB
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ORIGINAL PREVIEW -->
+
+            <div
+                id="previewWrapper"
+                class="preview-wrapper"
+                style="display:none;"
+            >
+
+                <div class="preview-title">
+
+                    <div class="preview-heading">
+
+                        <span class="preview-status">
+                            ●
+                        </span>
+
+                        <div>
+                            <strong>Image Uploaded</strong>
+                            <small>Original retinal image</small>
+                        </div>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        id="changeImageButton"
+                        class="change-btn"
+                    >
+                        ↻ Change
+                    </button>
+
+                </div>
+
+
+                <div class="preview-image-container">
+
+                    <img
+                        id="preview"
+                        class="image-preview"
+                        alt="Original retinal image"
+                    >
+
+                    <div class="image-overlay">
+                        ORIGINAL
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= ENHANCEMENT ================= -->
+
+        <div
+            id="enhancementControls"
+            class="enhancement-controls"
+        >
+
+            <div class="enhancement-info">
+
+                <div class="enhancement-icon">
+                    ✨
+                </div>
+
+                <div>
+
+                    <strong>
+                        Enhance retinal image
+                    </strong>
+
+                    <p>
+                        Improve contrast, color and retinal detail
+                        before AI analysis.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="enhanceButton"
+                class="enhance-btn"
+            >
+                <span>✦</span>
+                Enhance Image
+            </button>
+
+        </div>
+
+
+        <!-- ================= COMPARISON ================= -->
+
+        <div
+            id="comparisonSection"
+            class="comparison-section"
+            style="display:none;"
+        >
+
+            <div class="comparison-header">
+
+                <div>
+
+                    <div class="comparison-label">
+                        IMAGE PROCESSING
+                    </div>
+
+                    <h3>
+                        Original vs Enhanced
+                    </h3>
+
+                    <p>
+                        Review the processed image before running
+                        the AI model.
+                    </p>
+
+                </div>
+
+                <span class="enhanced-badge">
+                    ✦ ENHANCED
+                </span>
+
+            </div>
+
+
+            <div class="comparison-grid">
+
+                <!-- ORIGINAL -->
+
+                <div class="image-panel">
+
+                    <div class="image-panel-title">
+
+                        <span>
+                            ORIGINAL
+                        </span>
+
+                        <small>
+                            Uploaded image
+                        </small>
+
+                    </div>
+
+                    <div class="comparison-image-wrap">
+
+                        <img
+                            id="comparisonOriginal"
+                            alt="Original retinal image"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- ENHANCED -->
+
+                <div class="image-panel enhanced-panel">
+
+                    <div class="image-panel-title">
+
+                        <span>
+                            ENHANCED
+                        </span>
+
+                        <small>
+                            AI-ready image
+                        </small>
+
+                    </div>
+
+                    <div class="comparison-image-wrap">
+
+                        <img
+                            id="enhancedPreview"
+                            alt="Enhanced retinal image"
+                        >
+
+                        <div class="enhanced-overlay">
+                            ✦ ENHANCED
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="analyseEnhancedButton"
+                class="analyse-btn enhanced-analyse-btn"
+            >
+                <span class="button-icon">◈</span>
+                Analyse Enhanced Image
+                <span class="button-arrow">→</span>
+            </button>
+
+        </div>
+
+
+        <!-- ================= ANALYSE ORIGINAL ================= -->
+
+        <div class="analysis-action">
+
+            <div class="action-hint">
+                <span>◉</span>
+                Ready for AI inference
+            </div>
+
+            <button
+                type="button"
+                id="analyseButton"
+                class="analyse-btn"
+            >
+                <span class="button-icon">◈</span>
+                Analyse Image
+                <span class="button-arrow">→</span>
+            </button>
+
+        </div>
+
+
+        <!-- ================= LOADING ================= -->
+
+        <div
+            id="loading"
+            class="loading"
+            style="display:none;"
+        >
+
+            <div class="loading-visual">
+
+                <div class="loading-ring"></div>
+                <span>AI</span>
+
+            </div>
+
+            <div class="loading-text">
+
+                <strong>
+                    AI is analysing the retinal image...
+                </strong>
+
+                <span>
+                    Running EfficientNet-B0 inference
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= RESULTS ================= -->
+
+    <section class="card results-card">
+
+        <div class="section-header">
+
+            <div class="section-title">
+
+                <div class="section-icon green-icon">
+                    ✓
+                </div>
+
+                <div>
+                    <span class="eyebrow">STEP 03</span>
+                    <h2>AI Screening Result</h2>
+                    <p>Model-generated retinal assessment.</p>
+                </div>
+
+            </div>
+
+            <div class="section-number">
+                03
+            </div>
+
+        </div>
+
+
+        <!-- EMPTY RESULT -->
+
+        <div
+            id="emptyResult"
+            class="empty-result"
+        >
+
+            <div class="empty-result-visual">
+
+                <div class="empty-circle">
+                    ◌
+                </div>
+
+                <div class="empty-pulse"></div>
+
+            </div>
+
+            <h3>
+                Waiting for analysis
+            </h3>
+
+            <p>
+                Upload a retinal image and run the AI analysis
+                to see the screening result.
+            </p>
+
+            <div class="empty-tags">
+
+                <span>DR Grade</span>
+                <span>AI Confidence</span>
+                <span>Risk Assessment</span>
+
+            </div>
+
+        </div>
+
+
+        <!-- RESULT -->
+
+        <div
+            id="resultCard"
+            class="result-content"
+            style="display:none;"
+        >
+
+            <!-- PATIENT HEADER -->
+
+            <div class="result-patient">
+
+                <div class="result-person">
+
+                    <div class="patient-avatar">
+                        ♙
+                    </div>
+
+                    <div>
+
+                        <span>PATIENT</span>
+
+                        <strong id="resultPatient">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="result-id">
+
+                    <span>PATIENT ID</span>
+
+                    <strong id="resultPatientId">
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- DIAGNOSIS -->
+
+            <div
+                id="diagnosisBanner"
+                class="diagnosis-banner"
+            >
+
+                <div class="diagnosis-main">
+
+                    <div class="diagnosis-icon">
+                        ◉
+                    </div>
+
+                    <div>
+
+                        <span>
+                            AI ASSESSMENT
+                        </span>
+
+                        <h3 id="resultDiagnosis">
+                            —
+                        </h3>
+
+                        <p>
+                            Model classification based on retinal image.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="resultDecision"
+                    class="decision-badge"
+                >
+                    —
+                </div>
+
+            </div>
+
+
+            <!-- METRICS -->
+
+            <div class="metrics-grid">
+
+
+                <!-- GRADE -->
+
+                <div class="metric-card grade-card">
+
+                    <div class="metric-card-header">
+
+                        <span class="metric-label">
+                            DR GRADE
+                        </span>
+
+                        <span class="metric-mini-icon">
+                            ◈
+                        </span>
+
+                    </div>
+
+                    <strong id="resultGrade">
+                        —
+                    </strong>
+
+                    <small>
+                        Severity classification
+                    </small>
+
+                </div>
+
+
+                <!-- CONFIDENCE -->
+
+                <div class="metric-card">
+
+                    <div class="metric-top">
+
+                        <span class="metric-label">
+                            AI CONFIDENCE
+                        </span>
+
+                        <strong id="resultConfidence">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="progress-track">
+
+                        <div
+                            id="confidenceBar"
+                            class="progress-bar"
+                            style="width:0%;"
+                        ></div>
+
+                    </div>
+
+                    <small>
+                        Model prediction confidence
+                    </small>
+
+                </div>
+
+
+                <!-- RISK -->
+
+                <div class="metric-card">
+
+                    <div class="metric-top">
+
+                        <span class="metric-label">
+                            REFERABLE DR RISK
+                        </span>
+
+                        <strong id="resultRisk">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="progress-track">
+
+                        <div
+                            id="riskBar"
+                            class="progress-bar risk"
+                            style="width:0%;"
+                        ></div>
+
+                    </div>
+
+                    <small>
+                        Probability of Grade 2–4
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- MODEL INFO -->
+
+            <div class="model-info">
+
+                <div class="model-status">
+                    <span class="status-dot"></span>
+
+                    <div>
+                        <span>MODEL</span>
+                        <strong>EfficientNet-B0</strong>
+                    </div>
+                </div>
+
+                <div class="model-divider"></div>
+
+                <div class="model-detail">
+                    <span>CLASSIFICATION</span>
+                    <strong>5-Class DR Classification</strong>
+                </div>
+
+                <div class="model-divider"></div>
+
+                <div class="model-detail">
+                    <span>INPUT</span>
+                    <strong>224 × 224</strong>
+                </div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="result-actions">
+
+                <button
+                    type="button"
+                    id="downloadReport"
+                    class="secondary-btn"
+                >
+                    <span>↓</span>
+                    Download PDF Report
+                </button>
+
+
+                <button
+                    type="button"
+                    id="newAnalysisButton"
+                    class="primary-btn"
+                >
+                    <span>＋</span>
+                    New Analysis
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= HISTORY ================= -->
+
+    <section class="card history-card">
+
+        <div class="section-header">
+
+            <div class="section-title">
+
+                <div class="section-icon orange-icon">
+                    ◷
+                </div>
+
+                <div>
+                    <span class="eyebrow">LOCAL DATA</span>
+                    <h2>Screening History</h2>
+                    <p>Recent analyses stored locally in this browser.</p>
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="clearHistoryButton"
+                class="clear-btn"
+            >
+                Clear History
+            </button>
+
+        </div>
+
+
+        <div
+            id="historyList"
+            class="history-list"
+        ></div>
+
+    </section>
+
+
+</main>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer class="footer">
+
+    <div class="footer-brand">
+
+        <div class="footer-logo">
+            ◉
+        </div>
+
+        <div>
+            <strong>RetinaAI</strong>
+            <span>AI-Assisted Retinal Screening</span>
+        </div>
+
+    </div>
+
+    <div class="footer-right">
+
+        <span>
+            Built for research & demonstration
+        </span>
+
+        <span class="footer-dot">•</span>
+
+        <span>
+            EfficientNet-B0
+        </span>
+
+    </div>
+
+</footer>
+
+
+<!-- ================= SCRIPT ================= -->
+
+<script src="script.js?v=enhancement-fix-2"></script>
+```
+
+</body>
+
+</html>
