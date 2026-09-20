@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | RetinaAI</title>
+    <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="brand"><div class="brand-mark">R</div><div><strong>RetinaAI</strong><small>Clinical Intelligence</small></div></div>
+        <nav class="navigation">
+            <a href="dashboard.html">⌂ <span>Dashboard</span></a>
+            <a href="patients.html">♙ <span>Patients</span></a>
+            <a href="index.html">＋ <span>New Screening</span></a>
+            <a href="reports.html">▤ <span>Reports</span></a>
+            <a href="analytics.html">◒ <span>Analytics</span></a>
+            <a class="active" href="settings.html">⚙ <span>Settings</span></a>
+        </nav>
+        <button id="logoutButton" class="logout">Logout</button>
+    </aside>
+    <main class="main">
+        <header class="topbar"><a class="menu" href="dashboard.html">← Dashboard</a><span>RetinaAI / <strong>Settings</strong></span></header>
+        <section class="content">
+            <span class="eyebrow">SYSTEM CONFIGURATION</span>
+            <h1>Settings</h1>
+            <p class="intro">Manage your account preferences and screening workspace.</p>
+            <div class="settings-grid">
+                <section class="panel"><span class="eyebrow">ACCOUNT</span><h2>Profile</h2><label for="displayName">Display name</label><input id="displayName" type="text"><label for="email">Email address</label><input id="email" type="email" disabled><button id="saveButton" class="primary">Save changes</button><p id="saveMessage" class="message" role="status"></p></section>
+                <section class="panel"><span class="eyebrow">WORKSPACE</span><h2>Screening preferences</h2><div class="preference"><div><strong>Local screening history</strong><small>Keep recent results in this browser.</small></div><input id="historyToggle" type="checkbox" checked></div><div class="preference"><div><strong>System status</strong><small>Backend connection used for AI analysis.</small></div><span class="online">Online</span></div></section>
+            </div>
+        </section>
+    </main>
+    <script src="settings.js"></script>
+</body>
+</html>

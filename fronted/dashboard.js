@@ -378,13 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 event.preventDefault();
 
-                // Settings page not created yet.
-                // Keep navigation safe instead of
-                // showing a broken page.
-
-                alert(
-                    "Settings will be available soon."
-                );
+                window.location.href = "settings.html";
             }
         );
     }

@@ -969,9 +969,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 event.preventDefault();
 
-                alert(
-                    "Reports module is coming next."
-                );
+                window.location.href = "reports.html";
             }
         );
     }
@@ -985,9 +983,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 event.preventDefault();
 
-                alert(
-                    "Analytics module is coming next."
-                );
+                window.location.href = "analytics.html";
             }
         );
     }
@@ -1001,9 +997,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 event.preventDefault();
 
-                alert(
-                    "Settings module is coming next."
-                );
+                window.location.href = "settings.html";
             }
         );
     }

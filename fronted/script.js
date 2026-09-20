@@ -8,7 +8,10 @@
 // =====================================================
 
 const API_BASE_URL =
-    "https://retinaai-backend-5h1p.onrender.com";
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+        ? "http://127.0.0.1:5000"
+        : "https://retinaai-backend-5h1p.onrender.com";
 
 const API_URL =
     `${API_BASE_URL}/predict`;
@@ -1192,12 +1195,12 @@ async function analyseImage() {
             confidence:
                 Number(
                     data.confidence
-                ),
+                ) * 100,
 
             referableProbability:
                 Number(
                     data.referable_probability
-                ),
+                ) * 100,
 
             referable:
                 Boolean(
