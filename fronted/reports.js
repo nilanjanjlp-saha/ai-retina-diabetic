@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:5000";
+const API_BASE_URL = "https://retinaai-backend-5h1p.onrender.com";
 const REPORTS_API_URL = `${API_BASE_URL}/screenings`;
 
 
