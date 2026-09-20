@@ -22,7 +22,7 @@ const GRADCAM_API_URL =
 const SCREENINGS_API_URL =
     `${API_BASE_URL}/screenings`;
 
-const REQUEST_TIMEOUT_MS = 30000;
+const REQUEST_TIMEOUT_MS = 120000;
 
 async function fetchWithTimeout(url, options = {}) {
 
@@ -3079,3 +3079,4 @@ renderHistory();
 console.log(
     "RetinaAI initialized successfully"
 );
+
