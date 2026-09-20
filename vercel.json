@@ -3,6 +3,14 @@
     {
       "source": "/",
       "destination": "/fronted/login.html"
+    },
+    {
+      "source": "/:page(dashboard|index|login|signup|patients|patient-profile|reports|analytics|screening-report).html",
+      "destination": "/fronted/:page.html"
+    },
+    {
+      "source": "/:asset(dashboard.css|login.css|signup.css|patients.css|patient-profile.css|reports.css|screening-report.css|style.css|dashboard.js|login.js|signup.js|patients.js|patient-profile.js|reports.js|screening-report.js|script.js)",
+      "destination": "/fronted/:asset"
     }
   ]
 }
