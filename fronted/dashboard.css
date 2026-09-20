@@ -1362,3 +1362,77 @@ tbody tr:last-child td {
         line-height: 1.4;
     }
 }
+
+/* =====================================================
+   DASHBOARD POLISH
+===================================================== */
+
+.welcome-section {
+    position: relative;
+    overflow: hidden;
+    padding: 28px 30px;
+    border: 1px solid #e3e8f2;
+    border-radius: 18px;
+    background: linear-gradient(120deg, #ffffff, #f2f6ff);
+    box-shadow: 0 16px 38px rgba(26, 39, 70, .07);
+}
+
+.welcome-section::after {
+    content: "";
+    position: absolute;
+    width: 190px;
+    height: 190px;
+    right: -70px;
+    top: -95px;
+    border: 1px solid rgba(49, 87, 213, .12);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.welcome-section h1 {
+    position: relative;
+    z-index: 1;
+}
+
+.welcome-section p {
+    max-width: 620px;
+    line-height: 1.65;
+}
+
+.stat-card {
+    border-color: #e2e8f1;
+    box-shadow: 0 10px 26px rgba(26, 39, 70, .04);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    border-color: #cdd7ef;
+    box-shadow: 0 16px 32px rgba(26, 39, 70, .09);
+}
+
+.content > section,
+.dashboard-grid > section {
+    animation: dashboard-rise .45s ease both;
+}
+
+.content > section:nth-child(2) { animation-delay: .05s; }
+.content > section:nth-child(3) { animation-delay: .1s; }
+
+@keyframes dashboard-rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 520px) {
+    .welcome-section { padding: 22px 19px; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .stat-card { min-height: 84px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+    }
+}

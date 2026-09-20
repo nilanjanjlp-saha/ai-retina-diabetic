@@ -22,6 +22,29 @@ const GRADCAM_API_URL =
 const SCREENINGS_API_URL =
     `${API_BASE_URL}/screenings`;
 
+const REQUEST_TIMEOUT_MS = 30000;
+
+async function fetchWithTimeout(url, options = {}) {
+
+    const controller = new AbortController();
+    const timeout = setTimeout(
+        () => controller.abort(),
+        REQUEST_TIMEOUT_MS
+    );
+
+    try {
+        return await fetch(
+            url,
+            {
+                ...options,
+                signal: controller.signal
+            }
+        );
+    } finally {
+        clearTimeout(timeout);
+    }
+}
+
 
 // =====================================================
 // PATIENT CONTEXT
@@ -295,7 +318,7 @@ async function loadPatientContext() {
     try {
 
         const response =
-            await fetch(
+            await fetchWithTimeout(
                 `${API_BASE_URL}/patients/${encodeURIComponent(currentPatientId)}`
             );
 
@@ -1139,7 +1162,7 @@ async function analyseImage() {
 
 
         const response =
-            await fetch(
+            await fetchWithTimeout(
                 API_URL,
                 {
                     method: "POST",
@@ -1293,7 +1316,7 @@ async function analyseImage() {
 
 
         const gradcamResponse =
-            await fetch(
+            await fetchWithTimeout(
                 GRADCAM_API_URL,
                 {
                     method: "POST",
@@ -1380,9 +1403,16 @@ async function analyseImage() {
         // STEP 3 — SAVE TO DATABASE
         // =================================================
 
-        await saveScreeningToDatabase(
-            currentResult
-        );
+        try {
+            await saveScreeningToDatabase(
+                currentResult
+            );
+        } catch (saveError) {
+            console.warn(
+                "Screening persistence skipped:",
+                saveError
+            );
+        }
 
 
         // =================================================
@@ -1518,7 +1548,7 @@ async function saveScreeningToDatabase(
     try {
 
         const response =
-            await fetch(
+            await fetchWithTimeout(
                 SCREENINGS_API_URL,
                 {
                     method: "POST",
