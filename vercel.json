@@ -3,10 +3,6 @@
     {
       "source": "/",
       "destination": "/fronted/login.html"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/fronted/$1"
     }
   ]
 }

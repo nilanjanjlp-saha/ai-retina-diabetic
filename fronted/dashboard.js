@@ -2,6 +2,11 @@
 // RETINAAI DASHBOARD
 // =====================================================
 
+// IMPORTANT:
+// Backend ko deploy karne ke baad yahan deployed backend URL daalna.
+// Example:
+// const API_BASE_URL = "https://retinaai-backend.vercel.app";
+
 const API_BASE_URL = "http://127.0.0.1:5000";
 
 
@@ -21,38 +26,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const storedUser =
         localStorage.getItem("retinaai_user");
 
-
     if (
         loggedIn !== "true" ||
         !storedUser
     ) {
-
-        window.location.href =
-            "login.html";
-
+        window.location.href = "login.html";
         return;
     }
-
 
     let user;
 
     try {
-
         user = JSON.parse(storedUser);
-
     } catch (error) {
 
-        localStorage.removeItem(
-            "retinaai_logged_in"
-        );
+        localStorage.removeItem("retinaai_logged_in");
+        localStorage.removeItem("retinaai_user");
 
-        localStorage.removeItem(
-            "retinaai_user"
-        );
-
-        window.location.href =
-            "login.html";
-
+        window.location.href = "login.html";
         return;
     }
 
@@ -84,13 +75,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const displayName =
         user.name || "Admin";
 
-
     if (adminName) {
-
-        adminName.textContent =
-            displayName;
+        adminName.textContent = displayName;
     }
-
 
     if (welcomeName) {
 
@@ -148,12 +135,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    // Close sidebar after clicking navigation
+    // =================================================
+    // CLOSE SIDEBAR AFTER NAVIGATION
+    // =================================================
+
     const navItems =
         document.querySelectorAll(
             ".nav-item"
         );
-
 
     navItems.forEach(
         (item) => {
@@ -163,7 +152,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 () => {
 
                     if (
-                        window.innerWidth <= 800
+                        window.innerWidth <= 800 &&
+                        sidebar
                     ) {
 
                         sidebar.classList.remove(
@@ -172,7 +162,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }
             );
-
         }
     );
 
@@ -350,6 +339,13 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
 
+    function openAnalytics() {
+
+        window.location.href =
+            "analytics.html";
+    }
+
+
     if (analyticsNav) {
 
         analyticsNav.addEventListener(
@@ -358,9 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 event.preventDefault();
 
-                alert(
-                    "Analytics module is coming next."
-                );
+                openAnalytics();
             }
         );
     }
@@ -384,8 +378,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 event.preventDefault();
 
+                // Settings page not created yet.
+                // Keep navigation safe instead of
+                // showing a broken page.
+
                 alert(
-                    "Settings module is coming next."
+                    "Settings will be available soon."
                 );
             }
         );
@@ -449,28 +447,16 @@ async function loadDashboardStats() {
         );
 
 
-    // =================================================
-    // LOADING
-    // =================================================
-
     if (totalPatients) {
-
-        totalPatients.textContent =
-            "—";
+        totalPatients.textContent = "—";
     }
-
 
     if (totalScans) {
-
-        totalScans.textContent =
-            "—";
+        totalScans.textContent = "—";
     }
 
-
     if (totalReferrals) {
-
-        totalReferrals.textContent =
-            "—";
+        totalReferrals.textContent = "—";
     }
 
 
@@ -532,27 +518,17 @@ async function loadDashboardStats() {
 
 
         if (totalPatients) {
-
-            totalPatients.textContent =
-                "0";
+            totalPatients.textContent = "0";
         }
-
 
         if (totalScans) {
-
-            totalScans.textContent =
-                "0";
+            totalScans.textContent = "0";
         }
-
 
         if (totalReferrals) {
-
-            totalReferrals.textContent =
-                "0";
+            totalReferrals.textContent = "0";
         }
-
     }
-
 }
 
 
@@ -573,14 +549,11 @@ async function loadRecentPatients() {
     }
 
 
-    // =================================================
-    // LOADING STATE
-    // =================================================
-
     tableBody.innerHTML = `
         <tr>
             <td colspan="5">
                 <div class="empty-state">
+
                     <div class="empty-icon">
                         ◌
                     </div>
@@ -592,6 +565,7 @@ async function loadRecentPatients() {
                     <span>
                         Fetching recent screening data.
                     </span>
+
                 </div>
             </td>
         </tr>
@@ -628,10 +602,6 @@ async function loadRecentPatients() {
                 : [];
 
 
-        // =================================================
-        // EMPTY STATE
-        // =================================================
-
         if (screenings.length === 0) {
 
             tableBody.innerHTML = `
@@ -665,10 +635,6 @@ async function loadRecentPatients() {
         }
 
 
-        // =================================================
-        // SORT NEWEST FIRST
-        // =================================================
-
         screenings.sort(
             (a, b) => {
 
@@ -686,10 +652,6 @@ async function loadRecentPatients() {
             }
         );
 
-
-        // =================================================
-        // SHOW LATEST 5
-        // =================================================
 
         const recentScreenings =
             screenings.slice(0, 5);
@@ -784,9 +746,10 @@ async function loadRecentPatients() {
                     <td>
 
                         <span class="grade-badge grade-${grade}">
-                            ${grade !== "—"
-                                ? `Grade ${grade}`
-                                : "—"
+                            ${
+                                grade !== "—"
+                                    ? `Grade ${grade}`
+                                    : "—"
                             }
                         </span>
 
@@ -856,8 +819,7 @@ async function loadRecentPatients() {
                         </strong>
 
                         <span>
-                            Make sure the RetinaAI backend
-                            is running.
+                            Backend connection unavailable.
                         </span>
 
                     </div>
@@ -865,10 +827,8 @@ async function loadRecentPatients() {
                 </td>
 
             </tr>
-
         `;
     }
-
 }
 
 
@@ -876,9 +836,7 @@ async function loadRecentPatients() {
 // DATE FORMATTER
 // =====================================================
 
-function formatDashboardDate(
-    value
-) {
+function formatDashboardDate(value) {
 
     if (!value) {
         return "—";
@@ -914,9 +872,7 @@ function formatDashboardDate(
 // GET INITIAL
 // =====================================================
 
-function getInitial(
-    name
-) {
+function getInitial(name) {
 
     if (!name) {
         return "P";
@@ -934,29 +890,12 @@ function getInitial(
 // HTML ESCAPE
 // =====================================================
 
-function escapeHtml(
-    value
-) {
+function escapeHtml(value) {
 
     return String(value ?? "")
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
