@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:5000";
+const API_URL = "https://retinaai-backend-5h1p.onrender.com";
 
 const loginForm = document.getElementById("loginForm");
 const emailInput = document.getElementById("email");
@@ -24,13 +24,11 @@ togglePassword.addEventListener("click", () => {
     if (passwordInput.type === "password") {
 
         passwordInput.type = "text";
-
         togglePassword.textContent = "Hide";
 
     } else {
 
         passwordInput.type = "password";
-
         togglePassword.textContent = "Show";
     }
 
@@ -44,7 +42,6 @@ togglePassword.addEventListener("click", () => {
 function showError(message) {
 
     loginError.textContent = message;
-
     loginError.classList.add("show");
 }
 
@@ -52,22 +49,27 @@ function showError(message) {
 function hideError() {
 
     loginError.textContent = "";
-
     loginError.classList.remove("show");
 }
 
 
-// Fill the supported demo account and use the same login flow as manual sign-in.
+// =====================================================
+// DEMO ACCOUNT
+// =====================================================
+
 if (demoAccountButton) {
 
     demoAccountButton.addEventListener("click", () => {
 
         emailInput.value = DEMO_EMAIL;
         passwordInput.value = DEMO_PASSWORD;
+
         hideError();
+
         loginForm.requestSubmit();
 
     });
+
 }
 
 
@@ -82,7 +84,6 @@ loginForm.addEventListener("submit", async (event) => {
     hideError();
 
     const email = emailInput.value.trim();
-
     const password = passwordInput.value;
 
 
@@ -99,9 +100,7 @@ loginForm.addEventListener("submit", async (event) => {
 
     // Loading state
     loginButton.disabled = true;
-
     loginButton.classList.add("loading");
-
     loginButtonText.textContent = "Signing in";
 
 
@@ -113,8 +112,7 @@ loginForm.addEventListener("submit", async (event) => {
                 method: "POST",
 
                 headers: {
-                    "Content-Type":
-                        "application/json"
+                    "Content-Type": "application/json"
                 },
 
                 body: JSON.stringify({
@@ -173,16 +171,14 @@ loginForm.addEventListener("submit", async (event) => {
         );
 
         showError(
-            "Unable to connect to RetinaAI server. Make sure the backend is running."
+            "Unable to connect to RetinaAI server. Please try again."
         );
 
     } finally {
 
         loginButton.disabled = false;
 
-        loginButton.classList.remove(
-            "loading"
-        );
+        loginButton.classList.remove("loading");
 
         if (
             loginButtonText.textContent !==
