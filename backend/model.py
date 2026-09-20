@@ -1,8 +1,13 @@
 import torch
 import torch.nn as nn
+from pathlib import Path
 from torchvision.models import efficientnet_b0
 
-MODEL_PATH = "model/efficientnet_b0_aptos_final_best.pth"
+MODEL_PATH = (
+    Path(__file__).resolve().parent.parent
+    / "model"
+    / "efficientnet_b0_aptos_final_best.pth"
+)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

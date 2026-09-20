@@ -1,5 +1,32 @@
+# Python
 venv/
 .venv/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# IDE
 .vscode/
+.idea/
+
+# Environment / secrets
+.env
+.env.*
+
+# Local database
+backend/retinaai.db
+
+# Test files
+backend/test_db.py
+backend/test_login.py
+
+# Runtime uploads
+backend/uploads/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Reports | RetinaAI</title>
+
+    <link
+        rel="stylesheet"
+        href="dashboard.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="reports.css"
+    >
+</head>
+
+<body>
+
+    <!-- Mobile Overlay -->
+    <div
+        id="sidebarOverlay"
+        class="sidebar-overlay"
+    ></div>
+
+
+    <!-- Sidebar -->
+    <aside
+        id="sidebar"
+        class="sidebar"
+    >
+
+        <div class="sidebar-brand">
+
+            <div class="brand-mark">
+                R
+            </div>
+
+            <div class="brand-text">
+
+                <strong>
+                    RetinaAI
+                </strong>
+
+                <span>
+                    Clinical Intelligence
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <a
+                href="dashboard.html"
+                class="nav-item"
+            >
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+
+            <a
+                href="patients.html"
+                class="nav-item"
+            >
+                <span class="nav-icon">♙</span>
+                <span>Patients</span>
+            </a>
+
+
+            <a
+                href="index.html"
+                class="nav-item"
+            >
+                <span class="nav-icon">＋</span>
+                <span>New Scan</span>
+            </a>
+
+
+            <a
+                href="reports.html"
+                class="nav-item active"
+            >
+                <span class="nav-icon">▤</span>
+                <span>Reports</span>
+            </a>
+
+
+            <a
+                href="analytics.html"
+                class="nav-item"
+            >
+                <span class="nav-icon">◒</span>
+                <span>Analytics</span>
+            </a>
+
+
+            <a
+                href="settings.html"
+                class="nav-item"
+            >
+                <span class="nav-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="ai-status">
+
+                <span class="status-dot"></span>
+
+                <div>
+                    <strong>
+                        AI System Online
+                    </strong>
+
+                    <small>
+                        EfficientNet-B0
+                    </small>
+                </div>
+
+            </div>
+
+
+            <button
+                id="logoutButton"
+                class="logout-button"
+                type="button"
+            >
+                <span>↪</span>
+                Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- Main -->
+    <main class="main-content">
+
+        <!-- Topbar -->
+        <header class="topbar">
+
+            <button
+                id="mobileMenuButton"
+                class="mobile-menu-button"
+                type="button"
+                aria-label="Open menu"
+            >
+                ☰
+            </button>
+
+
+            <div class="topbar-title">
+
+                <span class="topbar-eyebrow">
+                    RETINAAI / CLINICAL RECORDS
+                </span>
+
+                <h1>
+                    Screening Reports
+                </h1>
+
+            </div>
+
+
+            <div class="topbar-actions">
+
+                <div
+                    id="profileButton"
+                    class="profile-button"
+                >
+
+                    <div
+                        id="profileAvatar"
+                        class="profile-avatar"
+                    >
+                        A
+                    </div>
+
+                    <div class="profile-info">
+
+                        <strong id="profileName">
+                            Admin
+                        </strong>
+
+                        <span>
+                            Administrator
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- Page -->
+        <section class="reports-page">
+
+            <!-- Header -->
+            <div class="reports-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        SCREENING HISTORY
+                    </span>
+
+                    <h2>
+                        All Reports
+                    </h2>
+
+                    <p>
+                        Review and access previously completed
+                        diabetic retinopathy screenings.
+                    </p>
+
+                </div>
+
+
+                <button
+                    id="newScreeningButton"
+                    class="primary-button"
+                    type="button"
+                >
+                    <span>＋</span>
+                    New Screening
+                </button>
+
+            </div>
+
+
+            <!-- Stats -->
+            <div class="report-stats">
+
+                <div class="report-stat-card">
+
+                    <div class="report-stat-icon">
+                        ▤
+                    </div>
+
+                    <div>
+
+                        <span>
+                            TOTAL REPORTS
+                        </span>
+
+                        <strong id="totalReports">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="report-stat-card">
+
+                    <div class="report-stat-icon">
+                        ◉
+                    </div>
+
+                    <div>
+
+                        <span>
+                            REFERABLE
+                        </span>
+
+                        <strong id="referableReports">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="report-stat-card">
+
+                    <div class="report-stat-icon">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <span>
+                            NON-REFERABLE
+                        </span>
+
+                        <strong id="nonReferableReports">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="report-stat-card">
+
+                    <div class="report-stat-icon">
+                        %
+                    </div>
+
+                    <div>
+
+                        <span>
+                            AVG. CONFIDENCE
+                        </span>
+
+                        <strong id="averageConfidence">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Reports Panel -->
+            <section class="reports-panel">
+
+                <div class="reports-panel-header">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            CLINICAL RECORDS
+                        </span>
+
+                        <h3>
+                            Screening Reports
+                        </h3>
+
+                    </div>
+
+
+                    <div class="reports-tools">
+
+                        <div class="search-box">
+
+                            <span>
+                                ⌕
+                            </span>
+
+                            <input
+                                id="reportSearch"
+                                type="search"
+                                placeholder="Search patient or report..."
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Loading -->
+                <div
+                    id="reportsLoading"
+                    class="reports-state"
+                >
+
+                    <div class="loader"></div>
+
+                    <h3>
+                        Loading reports
+                    </h3>
+
+                    <p>
+                        Retrieving screening records...
+                    </p>
+
+                </div>
+
+
+                <!-- Error -->
+                <div
+                    id="reportsError"
+                    class="reports-state error-state"
+                    style="display: none;"
+                >
+
+                    <div class="state-icon">
+                        !
+                    </div>
+
+                    <h3>
+                        Unable to load reports
+                    </h3>
+
+                    <p id="reportsErrorMessage">
+                        Something went wrong while loading
+                        screening records.
+                    </p>
+
+                    <button
+                        id="retryReportsButton"
+                        class="secondary-button"
+                        type="button"
+                    >
+                        Try Again
+                    </button>
+
+                </div>
+
+
+                <!-- Empty -->
+                <div
+                    id="reportsEmpty"
+                    class="reports-state"
+                    style="display: none;"
+                >
+
+                    <div class="state-icon">
+                        ▤
+                    </div>
+
+                    <h3>
+                        No screening reports yet
+                    </h3>
+
+                    <p>
+                        Completed screenings will appear
+                        here automatically.
+                    </p>
+
+                    <button
+                        id="emptyNewScreeningButton"
+                        class="secondary-button"
+                        type="button"
+                    >
+                        Start New Screening
+                    </button>
+
+                </div>
+
+
+                <!-- Table -->
+                <div
+                    id="reportsTableContainer"
+                    class="reports-table-container"
+                    style="display: none;"
+                >
+
+                    <table class="reports-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Patient
+                                </th>
+
+                                <th>
+                                    Screening Date
+                                </th>
+
+                                <th>
+                                    Diagnosis
+                                </th>
+
+                                <th>
+                                    Grade
+                                </th>
+
+                                <th>
+                                    Confidence
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="reportsTableBody">
+                            <!-- JavaScript -->
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- Mobile Cards -->
+                <div
+                    id="reportsMobileList"
+                    class="reports-mobile-list"
+                    style="display: none;"
+                >
+                    <!-- JavaScript -->
+                </div>
+
+
+                <!-- Filter Empty -->
+                <div
+                    id="filterEmpty"
+                    class="filter-empty"
+                    style="display: none;"
+                >
+
+                    <div class="state-icon">
+                        ⌕
+                    </div>
+
+                    <h3>
+                        No matching reports
+                    </h3>
+
+                    <p>
+                        Try a different patient name,
+                        ID, or diagnosis.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- Clinical Note -->
+            <section class="clinical-note">
+
+                <div class="clinical-note-icon">
+                    i
+                </div>
+
+                <div>
+
+                    <strong>
+                        Clinical information
+                    </strong>
+
+                    <p>
+                        RetinaAI screening results are intended
+                        to support clinical review and do not
+                        replace examination or diagnosis by
+                        a qualified healthcare professional.
+                    </p>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+
+            <span>
+                RetinaAI Clinical Intelligence Platform
+            </span>
+
+            <span>
+                AI-assisted diabetic retinopathy screening
+            </span>
+
+        </footer>
+
+    </main>
+
+
+    <script src="reports.js"></script>
+
+</body>
+
+</html>

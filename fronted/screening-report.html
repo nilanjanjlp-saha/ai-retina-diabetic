@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Screening Report | RetinaAI</title>
+
+    <link
+        rel="stylesheet"
+        href="screening-report.css"
+    >
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                R
+            </div>
+
+            <div>
+                <strong>RetinaAI</strong>
+                <span>Clinical Intelligence</span>
+            </div>
+
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <a href="dashboard.html">
+                <span>⌂</span>
+                Dashboard
+            </a>
+
+            <a href="patients.html">
+                <span>♙</span>
+                Patients
+            </a>
+
+            <a href="index.html">
+                <span>✦</span>
+                New Scan
+            </a>
+
+            <a href="#" class="active">
+                <span>▣</span>
+                Reports
+            </a>
+
+            <a href="#" id="analyticsNav">
+                <span>◫</span>
+                Analytics
+            </a>
+
+            <a href="#" id="settingsNav">
+                <span>⚙</span>
+                Settings
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="ai-status">
+
+                <span class="status-dot"></span>
+
+                <div>
+                    <strong>AI Engine</strong>
+                    <small>Operational</small>
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                id="logoutButton"
+                class="logout-button"
+            >
+                Sign out
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <button
+                type="button"
+                id="menuButton"
+                class="menu-button"
+            >
+                ☰
+            </button>
+
+            <div class="breadcrumb">
+
+                <a href="patients.html">
+                    Patients
+                </a>
+
+                <span>/</span>
+
+                <a id="patientBreadcrumb">
+                    Patient
+                </a>
+
+                <span>/</span>
+
+                <strong>
+                    Screening Report
+                </strong>
+
+            </div>
+
+            <div class="topbar-right">
+
+                <button
+                    type="button"
+                    id="profileButton"
+                    class="profile-button"
+                >
+                    <span class="profile-avatar">
+                        A
+                    </span>
+
+                    <span id="adminName">
+                        Admin
+                    </span>
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- LOADING -->
+
+        <section
+            id="pageLoading"
+            class="state-screen"
+        >
+
+            <div class="loader"></div>
+
+            <h2>
+                Loading report
+            </h2>
+
+            <p>
+                Retrieving screening information...
+            </p>
+
+        </section>
+
+
+        <!-- ERROR -->
+
+        <section
+            id="pageError"
+            class="state-screen"
+            style="display:none;"
+        >
+
+            <div class="state-icon">
+                !
+            </div>
+
+            <h2>
+                Unable to load report
+            </h2>
+
+            <p id="errorMessage">
+                Something went wrong.
+            </p>
+
+            <button
+                type="button"
+                id="backToPatientButton"
+                class="primary-button"
+            >
+                Back to Patient
+            </button>
+
+        </section>
+
+
+        <!-- REPORT -->
+
+        <div
+            id="reportContent"
+            class="report-content"
+            style="display:none;"
+        >
+
+            <!-- REPORT HEADER -->
+
+            <section class="report-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        RETINAAI SCREENING REPORT
+                    </span>
+
+                    <h1>
+                        Diabetic Retinopathy Assessment
+                    </h1>
+
+                    <p>
+                        AI-assisted retinal screening
+                        and explainability report.
+                    </p>
+
+                </div>
+
+                <div class="report-actions">
+
+                    <button
+                        type="button"
+                        id="printButton"
+                        class="secondary-button"
+                    >
+                        Print Report
+                    </button>
+
+                    <button
+                        type="button"
+                        id="newScanButton"
+                        class="primary-button"
+                    >
+                        New Screening
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- PATIENT CARD -->
+
+            <section class="panel patient-card">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            PATIENT
+                        </span>
+
+                        <h2 id="patientName">
+                            Patient
+                        </h2>
+
+                    </div>
+
+                    <span
+                        id="patientId"
+                        class="patient-id"
+                    >
+                        —
+                    </span>
+
+                </div>
+
+                <div class="patient-grid">
+
+                    <div class="info-item">
+
+                        <span>
+                            Age
+                        </span>
+
+                        <strong id="patientAge">
+                            —
+                        </strong>
+
+                    </div>
+
+                    <div class="info-item">
+
+                        <span>
+                            Gender
+                        </span>
+
+                        <strong id="patientGender">
+                            —
+                        </strong>
+
+                    </div>
+
+                    <div class="info-item">
+
+                        <span>
+                            Phone
+                        </span>
+
+                        <strong id="patientPhone">
+                            —
+                        </strong>
+
+                    </div>
+
+                    <div class="info-item">
+
+                        <span>
+                            Screening Date
+                        </span>
+
+                        <strong id="screeningDate">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- RESULT -->
+
+            <section class="result-grid">
+
+                <div class="panel result-card">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                AI ASSESSMENT
+                            </span>
+
+                            <h2>
+                                Screening Result
+                            </h2>
+
+                        </div>
+
+                        <span
+                            id="resultBadge"
+                            class="result-badge"
+                        >
+                            —
+                        </span>
+
+                    </div>
+
+                    <div class="diagnosis-box">
+
+                        <span>
+                            Predicted Condition
+                        </span>
+
+                        <strong id="diagnosis">
+                            —
+                        </strong>
+
+                    </div>
+
+                    <div class="metrics">
+
+                        <div class="metric">
+
+                            <span>
+                                DR Grade
+                            </span>
+
+                            <strong id="grade">
+                                —
+                            </strong>
+
+                        </div>
+
+                        <div class="metric">
+
+                            <span>
+                                AI Confidence
+                            </span>
+
+                            <strong id="confidence">
+                                —
+                            </strong>
+
+                        </div>
+
+                        <div class="metric">
+
+                            <span>
+                                Referable Probability
+                            </span>
+
+                            <strong id="referableProbability">
+                                —
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    <div class="referral-box">
+
+                        <div class="referral-icon">
+                            !
+                        </div>
+
+                        <div>
+
+                            <strong id="referralTitle">
+                                —
+                            </strong>
+
+                            <p id="referralText">
+                                —
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- GRADE GUIDE -->
+
+                <div class="panel grade-guide">
+
+                    <div class="panel-header">
+
+                        <div>
+
+                            <span class="eyebrow">
+                                REFERENCE
+                            </span>
+
+                            <h2>
+                                DR Severity Scale
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+                    <div class="grade-list">
+
+                        <div class="grade-row">
+
+                            <span>0</span>
+
+                            <div>
+                                <strong>
+                                    No DR
+                                </strong>
+
+                                <small>
+                                    No visible diabetic retinopathy
+                                </small>
+                            </div>
+
+                        </div>
+
+                        <div class="grade-row">
+
+                            <span>1</span>
+
+                            <div>
+                                <strong>
+                                    Mild NPDR
+                                </strong>
+
+                                <small>
+                                    Mild non-proliferative changes
+                                </small>
+                            </div>
+
+                        </div>
+
+                        <div class="grade-row">
+
+                            <span>2</span>
+
+                            <div>
+                                <strong>
+                                    Moderate NPDR
+                                </strong>
+
+                                <small>
+                                    Moderate retinopathy changes
+                                </small>
+                            </div>
+
+                        </div>
+
+                        <div class="grade-row">
+
+                            <span>3</span>
+
+                            <div>
+                                <strong>
+                                    Severe NPDR
+                                </strong>
+
+                                <small>
+                                    Advanced non-proliferative changes
+                                </small>
+                            </div>
+
+                        </div>
+
+                        <div class="grade-row">
+
+                            <span>4</span>
+
+                            <div>
+                                <strong>
+                                    Proliferative DR
+                                </strong>
+
+                                <small>
+                                    Proliferative retinopathy
+                                </small>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- EXPLAINABILITY -->
+
+            <section class="panel explainability-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            MODEL EXPLAINABILITY
+                        </span>
+
+                        <h2>
+                            Grad-CAM Explanation
+                        </h2>
+
+                        <p>
+                            Visualization of image regions
+                            that contributed relatively more
+                            to the model prediction.
+                        </p>
+
+                    </div>
+
+                    <span class="explanation-badge">
+                        ✦ GRAD-CAM
+                    </span>
+
+                </div>
+
+                <div class="explanation-grid">
+
+                    <div class="image-panel">
+
+                        <div class="image-title">
+
+                            <strong>
+                                ORIGINAL
+                            </strong>
+
+                            <span>
+                                Input retinal image
+                            </span>
+
+                        </div>
+
+                        <div class="image-container">
+
+                            <img
+                                id="originalImage"
+                                alt="Original retinal image"
+                            >
+
+                            <div
+                                id="originalImageEmpty"
+                                class="image-empty"
+                            >
+                                Original image unavailable
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="image-panel">
+
+                        <div class="image-title">
+
+                            <strong>
+                                AI HEATMAP
+                            </strong>
+
+                            <span>
+                                Grad-CAM visualization
+                            </span>
+
+                        </div>
+
+                        <div class="image-container">
+
+                            <img
+                                id="gradcamImage"
+                                alt="Grad-CAM heatmap"
+                            >
+
+                            <div
+                                id="gradcamImageEmpty"
+                                class="image-empty"
+                            >
+                                Heatmap unavailable
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="explanation-note">
+
+                    <span>
+                        ⓘ
+                    </span>
+
+                    <p>
+                        Brighter regions indicate areas that
+                        contributed relatively more to the
+                        model's prediction. This visualization
+                        is an AI explanation and does not
+                        represent a clinical diagnosis.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- REPORT FOOTER -->
+
+            <section class="report-note">
+
+                <div class="note-icon">
+                    ✓
+                </div>
+
+                <div>
+
+                    <strong>
+                        AI-assisted screening
+                    </strong>
+
+                    <p>
+                        This report is generated by RetinaAI
+                        for screening and decision-support
+                        purposes. Results should be reviewed
+                        by a qualified healthcare professional
+                        before clinical decisions are made.
+                    </p>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <script src="screening-report.js"></script>
+
+</body>
+
+</html>

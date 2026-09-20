@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Patient Profile | RetinaAI</title>
+
+    <link
+        rel="stylesheet"
+        href="patient-profile.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                R
+            </div>
+
+            <div class="brand-text">
+
+                <strong>
+                    RetinaAI
+                </strong>
+
+                <span>
+                    Clinical Intelligence
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+
+            <div class="nav-section">
+
+                <span class="nav-label">
+                    WORKSPACE
+                </span>
+
+
+                <a
+                    href="dashboard.html"
+                    class="nav-item"
+                >
+                    <span class="nav-icon">
+                        ⌂
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+                </a>
+
+
+                <a
+                    href="patients.html"
+                    class="nav-item active"
+                >
+                    <span class="nav-icon">
+                        ♙
+                    </span>
+
+                    <span>
+                        Patients
+                    </span>
+                </a>
+
+
+                <a
+                    href="index.html"
+                    class="nav-item"
+                >
+                    <span class="nav-icon">
+                        ⊕
+                    </span>
+
+                    <span>
+                        New Scan
+                    </span>
+                </a>
+
+            </div>
+
+
+
+            <div class="nav-section">
+
+                <span class="nav-label">
+                    INSIGHTS
+                </span>
+
+
+                <a
+                    href="#"
+                    class="nav-item"
+                    id="reportsNav"
+                >
+                    <span class="nav-icon">
+                        ▤
+                    </span>
+
+                    <span>
+                        Reports
+                    </span>
+                </a>
+
+
+                <a
+                    href="#"
+                    class="nav-item"
+                    id="analyticsNav"
+                >
+                    <span class="nav-icon">
+                        ◒
+                    </span>
+
+                    <span>
+                        Analytics
+                    </span>
+                </a>
+
+            </div>
+
+
+
+            <div class="nav-section">
+
+                <span class="nav-label">
+                    SYSTEM
+                </span>
+
+
+                <a
+                    href="#"
+                    class="nav-item"
+                    id="settingsNav"
+                >
+                    <span class="nav-icon">
+                        ⚙
+                    </span>
+
+                    <span>
+                        Settings
+                    </span>
+                </a>
+
+            </div>
+
+        </nav>
+
+
+
+        <div class="sidebar-bottom">
+
+            <div class="system-status">
+
+                <span class="status-dot"></span>
+
+                <div>
+
+                    <strong>
+                        AI System
+                    </strong>
+
+                    <span>
+                        Operational
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="logout-button"
+                id="logoutButton"
+            >
+
+                <span>
+                    ↪
+                </span>
+
+                Logout
+
+            </button>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main-content">
+
+
+        <!-- ================= TOPBAR ================= -->
+
+        <header class="topbar">
+
+
+            <button
+                class="menu-button"
+                id="menuButton"
+            >
+                ☰
+            </button>
+
+
+            <div class="topbar-left">
+
+                <span class="topbar-title">
+                    Patient Management
+                </span>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+
+                <button
+                    class="notification-button"
+                    id="notificationButton"
+                >
+
+                    ♢
+
+                    <span class="notification-dot"></span>
+
+                </button>
+
+
+                <button
+                    class="profile-button"
+                    id="profileButton"
+                >
+
+                    <div class="profile-avatar">
+                        A
+                    </div>
+
+
+                    <div class="profile-info">
+
+                        <strong id="adminName">
+                            Admin
+                        </strong>
+
+                        <span>
+                            Administrator
+                        </span>
+
+                    </div>
+
+
+                    <span class="profile-arrow">
+                        ▾
+                    </span>
+
+                </button>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- ================= PAGE ================= -->
+
+        <section class="page-container">
+
+
+            <!-- ================= BREADCRUMB ================= -->
+
+            <div class="breadcrumb">
+
+                <a href="patients.html">
+                    Patients
+                </a>
+
+                <span>
+                    /
+                </span>
+
+                <strong id="breadcrumbPatient">
+                    Patient Profile
+                </strong>
+
+            </div>
+
+
+
+            <!-- ================= LOADING ================= -->
+
+            <div
+                class="page-loading"
+                id="pageLoading"
+            >
+
+                <div class="loading-spinner"></div>
+
+                <p>
+                    Loading patient profile...
+                </p>
+
+            </div>
+
+
+
+            <!-- ================= ERROR ================= -->
+
+            <div
+                class="page-error"
+                id="pageError"
+            >
+
+                <div class="error-icon">
+                    !
+                </div>
+
+
+                <h3>
+                    Unable to load patient
+                </h3>
+
+
+                <p id="errorMessage">
+                    Something went wrong.
+                </p>
+
+
+                <button
+                    class="secondary-button"
+                    onclick="window.location.href='patients.html'"
+                >
+                    Back to Patients
+                </button>
+
+            </div>
+
+
+
+            <!-- ================= PROFILE CONTENT ================= -->
+
+            <div
+                class="profile-content"
+                id="profileContent"
+            >
+
+
+                <!-- ================= PROFILE HEADER ================= -->
+
+                <div class="profile-header">
+
+
+                    <div class="profile-header-left">
+
+
+                        <div
+                            class="large-patient-avatar"
+                            id="patientAvatar"
+                        >
+                            P
+                        </div>
+
+
+                        <div class="patient-heading">
+
+
+                            <div class="patient-heading-top">
+
+
+                                <span
+                                    class="patient-id-badge"
+                                    id="patientId"
+                                >
+                                    PAT-0001
+                                </span>
+
+
+                                <span
+                                    class="patient-status"
+                                    id="patientStatus"
+                                >
+                                    Active
+                                </span>
+
+                            </div>
+
+
+                            <h1 id="patientName">
+                                Patient Name
+                            </h1>
+
+
+                            <p>
+                                Patient profile and screening history
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="profile-header-actions">
+
+
+                        <button
+                            class="secondary-button"
+                            id="backButton"
+                        >
+                            ← Back
+                        </button>
+
+
+                        <button
+                            class="primary-button"
+                            id="newScreeningButton"
+                        >
+
+                            <span>
+                                ＋
+                            </span>
+
+                            New Screening
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ================= INFO CARDS ================= -->
+
+                <div class="info-grid">
+
+
+                    <div class="info-card">
+
+                        <span class="info-label">
+                            AGE
+                        </span>
+
+                        <strong id="patientAge">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-card">
+
+                        <span class="info-label">
+                            GENDER
+                        </span>
+
+                        <strong id="patientGender">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-card">
+
+                        <span class="info-label">
+                            PHONE
+                        </span>
+
+                        <strong id="patientPhone">
+                            —
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-card">
+
+                        <span class="info-label">
+                            REGISTERED
+                        </span>
+
+                        <strong id="patientCreated">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ================= CONTENT GRID ================= -->
+
+                <div class="content-grid">
+
+
+                    <!-- ================= LEFT COLUMN ================= -->
+
+                    <div class="main-column">
+
+
+                        <!-- ================= SCREENING HISTORY ================= -->
+
+                        <section class="panel">
+
+
+                            <div class="panel-header">
+
+
+                                <div>
+
+                                    <span class="eyebrow">
+                                        MEDICAL RECORD
+                                    </span>
+
+                                    <h2>
+                                        Screening History
+                                    </h2>
+
+                                </div>
+
+
+                                <span
+                                    class="screening-count"
+                                    id="screeningCount"
+                                >
+                                    0 screenings
+                                </span>
+
+                            </div>
+
+
+
+                            <div
+                                class="screening-list"
+                                id="screeningList"
+                            >
+
+                                <!-- JS inserts screenings -->
+
+                            </div>
+
+
+
+                            <!-- ================= EMPTY STATE ================= -->
+
+                            <div
+                                class="screening-empty"
+                                id="screeningEmpty"
+                            >
+
+                                <div class="empty-icon">
+                                    ◉
+                                </div>
+
+
+                                <h3>
+                                    No screenings yet
+                                </h3>
+
+
+                                <p>
+                                    Start the first retinal screening
+                                    for this patient.
+                                </p>
+
+
+                                <button
+                                    class="primary-button"
+                                    id="emptyScreeningButton"
+                                >
+
+                                    ＋ Start Screening
+
+                                </button>
+
+                            </div>
+
+                        </section>
+
+
+
+                        <!-- =================================================
+                             RISK TREND
+                        ================================================== -->
+
+                        <section class="panel risk-trend-panel">
+
+
+                            <div class="panel-header">
+
+
+                                <div>
+
+                                    <span class="eyebrow">
+                                        SCREENING ANALYTICS
+                                    </span>
+
+                                    <h2>
+                                        Risk Trend
+                                    </h2>
+
+                                    <p class="risk-trend-description">
+                                        Historical diabetic retinopathy
+                                        grade across screenings.
+                                    </p>
+
+                                </div>
+
+
+                                <span class="screening-count">
+                                    TREND
+                                </span>
+
+                            </div>
+
+
+
+                            <!-- ================= EMPTY TREND ================= -->
+
+                            <div
+                                id="riskTrendEmpty"
+                                class="risk-trend-empty"
+                            >
+
+                                <div class="empty-icon">
+                                    ◌
+                                </div>
+
+
+                                <h3>
+                                    Not enough screening data
+                                </h3>
+
+
+                                <p>
+                                    Complete more screenings to visualize
+                                    the patient's historical trend.
+                                </p>
+
+                            </div>
+
+
+
+                            <!-- ================= TREND CONTAINER ================= -->
+
+                            <div
+                                id="riskTrendContainer"
+                                class="risk-trend-container"
+                                style="display: none;"
+                            >
+
+
+                                <div class="risk-trend-chart">
+
+
+                                    <!-- Y AXIS -->
+
+                                    <div class="risk-axis">
+
+
+                                        <span>
+                                            Grade 4
+                                        </span>
+
+
+                                        <span>
+                                            Grade 3
+                                        </span>
+
+
+                                        <span>
+                                            Grade 2
+                                        </span>
+
+
+                                        <span>
+                                            Grade 1
+                                        </span>
+
+
+                                        <span>
+                                            Grade 0
+                                        </span>
+
+                                    </div>
+
+
+
+                                    <!-- CHART -->
+
+                                    <div
+                                        id="riskTrendChart"
+                                        class="risk-chart-area"
+                                    >
+
+                                        <!-- JavaScript generates chart -->
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <!-- ================= LEGEND ================= -->
+
+                                <div class="risk-trend-legend">
+
+
+                                    <span>
+
+                                        <i></i>
+
+                                        Screening grade
+
+                                    </span>
+
+
+                                    <span>
+                                        Higher grade = greater DR severity
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </section>
+
+                    </div>
+
+
+
+                    <!-- ================= RIGHT COLUMN ================= -->
+
+                    <div class="side-column">
+
+
+                        <!-- ================= PATIENT OVERVIEW ================= -->
+
+                        <section class="panel overview-panel">
+
+
+                            <div class="panel-header">
+
+
+                                <div>
+
+                                    <span class="eyebrow">
+                                        OVERVIEW
+                                    </span>
+
+                                    <h2>
+                                        Patient Details
+                                    </h2>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="detail-list">
+
+
+                                <div class="detail-row">
+
+                                    <span>
+                                        Patient ID
+                                    </span>
+
+                                    <strong id="detailPatientId">
+                                        —
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="detail-row">
+
+                                    <span>
+                                        Full Name
+                                    </span>
+
+                                    <strong id="detailPatientName">
+                                        —
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="detail-row">
+
+                                    <span>
+                                        Age
+                                    </span>
+
+                                    <strong id="detailPatientAge">
+                                        —
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="detail-row">
+
+                                    <span>
+                                        Gender
+                                    </span>
+
+                                    <strong id="detailPatientGender">
+                                        —
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="detail-row">
+
+                                    <span>
+                                        Phone
+                                    </span>
+
+                                    <strong id="detailPatientPhone">
+                                        —
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="detail-row">
+
+                                    <span>
+                                        Registered
+                                    </span>
+
+                                    <strong id="detailPatientCreated">
+                                        —
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </section>
+
+
+
+                        <!-- ================= SCREENING SUMMARY ================= -->
+
+                        <section class="panel summary-panel">
+
+
+                            <div class="panel-header">
+
+
+                                <div>
+
+                                    <span class="eyebrow">
+                                        SCREENING SUMMARY
+                                    </span>
+
+                                    <h2>
+                                        Overview
+                                    </h2>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="summary-stats">
+
+
+                                <div class="summary-stat">
+
+                                    <span>
+                                        Total Scans
+                                    </span>
+
+                                    <strong id="summaryScans">
+                                        0
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="summary-stat">
+
+                                    <span>
+                                        Referrals
+                                    </span>
+
+                                    <strong id="summaryReferrals">
+                                        0
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="summary-stat">
+
+                                    <span>
+                                        Latest Grade
+                                    </span>
+
+                                    <strong id="summaryGrade">
+                                        —
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </section>
+
+
+
+                        <!-- ================= AI NOTE ================= -->
+
+                        <section class="ai-note">
+
+
+                            <div class="ai-note-icon">
+                                ✦
+                            </div>
+
+
+                            <div>
+
+                                <strong>
+                                    RetinaAI Intelligence
+                                </strong>
+
+
+                                <p>
+                                    AI screening results are intended
+                                    to support clinical review and do
+                                    not replace professional diagnosis.
+                                </p>
+
+                            </div>
+
+                        </section>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= FOOTER ================= -->
+
+        <footer class="footer">
+
+
+            <span>
+                RetinaAI
+            </span>
+
+
+            <span>
+                Explainable AI for Retinal Screening
+            </span>
+
+
+            <span>
+                v1.0
+            </span>
+
+        </footer>
+
+    </main>
+
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script src="patient-profile.js"></script>
+
+</body>
+
+</html>

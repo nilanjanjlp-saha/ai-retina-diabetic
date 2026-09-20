@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>RetinaAI — Sign In</title>
+
+    <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+
+    <div class="login-page">
+
+        <!-- LEFT SIDE -->
+        <section class="login-visual">
+
+            <div class="visual-overlay"></div>
+
+            <div class="visual-content">
+
+                <div class="brand">
+                    <div class="brand-mark">R</div>
+
+                    <div>
+                        <h1>RetinaAI</h1>
+                        <span>AI-Powered Retinal Screening</span>
+                    </div>
+                </div>
+
+                <div class="visual-main">
+
+                    <span class="eyebrow">
+                        INTELLIGENT SCREENING PLATFORM
+                    </span>
+
+                    <h2>
+                        Smarter retinal screening.<br>
+                        <span>Clearer clinical insight.</span>
+                    </h2>
+
+                    <p>
+                        An explainable AI platform designed to support
+                        diabetic retinopathy screening with automated
+                        classification and Grad-CAM visualization.
+                    </p>
+
+                </div>
+
+                <div class="visual-features">
+
+                    <div class="feature-item">
+                        <div class="feature-icon">✦</div>
+
+                        <div>
+                            <strong>AI Classification</strong>
+                            <span>5-stage DR assessment</span>
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">◎</div>
+
+                        <div>
+                            <strong>Explainable AI</strong>
+                            <span>Grad-CAM visual insights</span>
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">▣</div>
+
+                        <div>
+                            <strong>Patient Records</strong>
+                            <span>Persistent screening history</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="visual-footer">
+                RetinaAI • AI-assisted retinal screening demo
+            </div>
+
+        </section>
+
+
+        <!-- RIGHT SIDE -->
+        <section class="login-panel">
+
+            <div class="login-container">
+
+                <!-- MOBILE BRAND -->
+                <div class="mobile-brand">
+
+                    <div class="brand-mark">R</div>
+
+                    <div>
+                        <h1>RetinaAI</h1>
+                        <span>AI-Powered Retinal Screening</span>
+                    </div>
+
+                </div>
+
+
+                <!-- LOGIN HEADER -->
+                <div class="login-header">
+
+                    <span class="eyebrow">
+                        SECURE ACCESS
+                    </span>
+
+                    <h2>Welcome back</h2>
+
+                    <p>
+                        Sign in to access the RetinaAI screening dashboard.
+                    </p>
+
+                </div>
+
+
+                <!-- LOGIN FORM -->
+                <form id="loginForm" class="login-form">
+
+                    <!-- EMAIL -->
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email address
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <span class="input-icon">✉</span>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter your email"
+                                autocomplete="email"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+                    <div class="form-group">
+
+                        <div class="label-row">
+
+                            <label for="password">
+                                Password
+                            </label>
+
+                        </div>
+
+                        <div class="input-wrapper">
+
+                            <span class="input-icon">⌕</span>
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                id="togglePassword"
+                                class="password-toggle"
+                            >
+                                Show
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DEMO ACCESS -->
+                    <div class="demo-access">
+
+                        <div class="demo-access-title">
+
+                            <span>✦</span>
+
+                            <strong>
+                                Demo Access
+                            </strong>
+
+                        </div>
+
+                        <p>
+                            For evaluation, use the demo administrator
+                            account.
+                        </p>
+
+                        <button
+                            type="button"
+                            id="demoAccountButton"
+                            class="demo-account-button"
+                        >
+                            Use Demo Account
+                        </button>
+
+                    </div>
+
+
+                    <!-- ERROR -->
+                    <div
+                        id="loginError"
+                        class="login-error"
+                        role="alert"
+                    ></div>
+
+
+                    <!-- LOGIN BUTTON -->
+                    <button
+                        type="submit"
+                        id="loginButton"
+                        class="login-button"
+                    >
+
+                        <span
+                            id="loginButtonText"
+                        >
+                            Sign in
+                        </span>
+
+                        <span
+                            class="button-arrow"
+                        >
+                            →
+                        </span>
+
+                    </button>
+
+                </form>
+
+
+                <!-- SECURITY NOTE -->
+                <div class="security-note">
+
+                    <span class="security-icon">
+                        ✓
+                    </span>
+
+                    <p>
+                        Authorized access only. RetinaAI is an
+                        AI-assisted screening demonstration and
+                        does not replace clinical diagnosis.
+                    </p>
+
+                </div>
+<div class="signup-link">
+    <span>Don't have an account?</span>
+
+    <a href="signup.html">
+        Create one
+    </a>
+</div>
+
+                <!-- FOOTER -->
+                <div class="login-footer">
+
+                    <span>
+                        © 2026 RetinaAI
+                    </span>
+
+                    <span class="footer-dot">
+                        •
+                    </span>
+
+                    <span>
+                        AI Screening Platform
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <!-- LOGIN JAVASCRIPT -->
+    <script src="login.js?v=2"></script>
+
+</body>
+</html>

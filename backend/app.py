@@ -1,23 +1,55 @@
-
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from PIL import Image, ImageEnhance
+
 import torch
 import torch.nn.functional as F
-import torchvision.transforms as transforms
-import io
+
+from PIL import Image, ImageEnhance
+from torchvision import transforms
+
+from io import BytesIO
 import base64
+from pathlib import Path
+from datetime import datetime
+import uuid
 
 from model import model, device
 
+from database import init_database, get_connection
+from auth import hash_password, verify_password, create_admin
+
+
+# =========================================================
+# APP CONFIG
+# =========================================================
 
 app = Flask(__name__)
 CORS(app)
 
+init_database()
+create_admin()
 
-# =====================================================
-# IMAGE TRANSFORM
-# =====================================================
+
+# =========================================================
+# STORAGE CONFIG
+# =========================================================
+
+BASE_DIR = Path(__file__).resolve().parent
+
+UPLOAD_DIR = BASE_DIR / "uploads"
+SCREENING_DIR = UPLOAD_DIR / "screenings"
+
+SCREENING_DIR.mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+print("Image storage:", SCREENING_DIR)
+
+
+# =========================================================
+# IMAGE PREPROCESSING
+# =========================================================
 
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
@@ -29,188 +61,1965 @@ transform = transforms.Compose([
 ])
 
 
-# =====================================================
-# HOME
-# =====================================================
+# =========================================================
+# HELPER FUNCTIONS
+# =========================================================
 
-@app.route("/")
+def prepare_image(file):
+
+    image = Image.open(file).convert("RGB")
+
+    tensor = transform(image).unsqueeze(0)
+
+    return image, tensor.to(device)
+
+
+def image_to_base64(image):
+
+    buffer = BytesIO()
+
+    image.save(
+        buffer,
+        format="JPEG"
+    )
+
+    encoded = base64.b64encode(
+        buffer.getvalue()
+    ).decode("utf-8")
+
+    return encoded
+
+
+def save_image(image, folder, filename):
+
+    folder = Path(folder)
+
+    folder.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    file_path = folder / filename
+
+    image.save(
+        file_path,
+        format="JPEG",
+        quality=95
+    )
+
+    return file_path
+
+
+def create_screening_folder():
+
+    timestamp = datetime.now().strftime(
+        "%Y%m%d_%H%M%S"
+    )
+
+    unique_id = uuid.uuid4().hex[:8]
+
+    folder_name = (
+        f"{timestamp}_{unique_id}"
+    )
+
+    folder = SCREENING_DIR / folder_name
+
+    folder.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    return folder, folder_name
+
+
+# =========================================================
+# HOME
+# =========================================================
+
+@app.route("/", methods=["GET"])
 def home():
+
     return jsonify({
         "status": "success",
         "message": "RetinaAI backend is running!"
     })
 
 
-# =====================================================
+# =========================================================
+# LOGIN
+# =========================================================
+
+@app.route("/login", methods=["POST"])
+def login():
+
+    data = request.get_json()
+
+    if not data:
+
+        return jsonify({
+            "success": False,
+            "message": "Invalid request"
+        }), 400
+
+    email = data.get(
+        "email",
+        ""
+    ).strip().lower()
+
+    password = data.get(
+        "password",
+        ""
+    )
+
+    if not email or not password:
+
+        return jsonify({
+            "success": False,
+            "message": "Email and password are required"
+        }), 400
+
+    try:
+
+        conn = get_connection()
+
+        user = conn.execute(
+            """
+            SELECT
+                id,
+                name,
+                email,
+                password_hash,
+                role
+            FROM users
+            WHERE email = ?
+            """,
+            (email,)
+        ).fetchone()
+
+        conn.close()
+
+        if not user:
+
+            return jsonify({
+                "success": False,
+                "message": "Invalid email or password"
+            }), 401
+
+        if not verify_password(
+            password,
+            user["password_hash"]
+        ):
+
+            return jsonify({
+                "success": False,
+                "message": "Invalid email or password"
+            }), 401
+
+        return jsonify({
+
+            "success": True,
+
+            "message": "Login successful",
+
+            "user": {
+                "id": user["id"],
+                "name": user["name"],
+                "email": user["email"],
+                "role": user["role"]
+            }
+
+        })
+
+    except Exception as e:
+
+        print(
+            "Login error:",
+            e
+        )
+
+        return jsonify({
+            "success": False,
+            "message": "Login failed"
+        }), 500
+
+
+# =========================================================
+# SIGNUP
+# =========================================================
+
+@app.route("/signup", methods=["POST"])
+def signup():
+
+    data = request.get_json()
+
+    if not data:
+
+        return jsonify({
+            "success": False,
+            "message": "Invalid request"
+        }), 400
+
+    name = data.get(
+        "name",
+        ""
+    ).strip()
+
+    email = data.get(
+        "email",
+        ""
+    ).strip().lower()
+
+    password = data.get(
+        "password",
+        ""
+    )
+
+    confirm_password = data.get(
+        "confirm_password",
+        ""
+    )
+
+
+    if not name:
+
+        return jsonify({
+            "success": False,
+            "message": "Name is required"
+        }), 400
+
+
+    if not email:
+
+        return jsonify({
+            "success": False,
+            "message": "Email is required"
+        }), 400
+
+
+    if "@" not in email or "." not in email:
+
+        return jsonify({
+            "success": False,
+            "message": "Please enter a valid email address"
+        }), 400
+
+
+    if len(password) < 6:
+
+        return jsonify({
+            "success": False,
+            "message": "Password must be at least 6 characters"
+        }), 400
+
+
+    if password != confirm_password:
+
+        return jsonify({
+            "success": False,
+            "message": "Passwords do not match"
+        }), 400
+
+
+    try:
+
+        conn = get_connection()
+
+        existing_user = conn.execute(
+            """
+            SELECT id
+            FROM users
+            WHERE email = ?
+            """,
+            (email,)
+        ).fetchone()
+
+
+        if existing_user:
+
+            conn.close()
+
+            return jsonify({
+                "success": False,
+                "message": "An account with this email already exists"
+            }), 409
+
+
+        password_hash = hash_password(
+            password
+        )
+
+
+        cursor = conn.execute(
+            """
+            INSERT INTO users
+            (
+                name,
+                email,
+                password_hash,
+                role
+            )
+            VALUES (?, ?, ?, ?)
+            """,
+            (
+                name,
+                email,
+                password_hash,
+                "admin"
+            )
+        )
+
+
+        conn.commit()
+
+        user_id = cursor.lastrowid
+
+        conn.close()
+
+
+        return jsonify({
+
+            "success": True,
+
+            "message": "Account created successfully",
+
+            "user": {
+                "id": user_id,
+                "name": name,
+                "email": email,
+                "role": "admin"
+            }
+
+        }), 201
+
+
+    except Exception as e:
+
+        print(
+            "Signup error:",
+            e
+        )
+
+        return jsonify({
+            "success": False,
+            "message": "Unable to create account"
+        }), 500
+
+
+# =========================================================
 # IMAGE ENHANCEMENT
-# =====================================================
+# =========================================================
 
 @app.route("/enhance", methods=["POST"])
 def enhance():
 
     if "image" not in request.files:
-        return jsonify({
-            "success": False,
-            "error": "No image uploaded"
-        }), 400
-
-    file = request.files["image"]
-
-    try:
-
-        image = Image.open(file).convert("RGB")
-
-        # Improve contrast
-        image = ImageEnhance.Contrast(
-            image
-        ).enhance(1.35)
-
-        # Slightly improve color
-        image = ImageEnhance.Color(
-            image
-        ).enhance(1.10)
-
-        # Improve sharpness
-        image = ImageEnhance.Sharpness(
-            image
-        ).enhance(1.50)
-
-        # Convert to JPEG
-        buffer = io.BytesIO()
-
-        image.save(
-            buffer,
-            format="JPEG",
-            quality=95
-        )
-
-        # Convert to Base64
-        encoded_image = base64.b64encode(
-            buffer.getvalue()
-        ).decode("utf-8")
-
-        return jsonify({
-            "success": True,
-            "image": encoded_image
-        })
-
-    except Exception as e:
 
         return jsonify({
             "success": False,
-            "error": str(e)
-        }), 500
-
-
-# =====================================================
-# PREDICTION
-# =====================================================
-
-@app.route("/predict", methods=["POST"])
-def predict():
-
-    if "image" not in request.files:
-        return jsonify({
-            "error": "No image uploaded"
+            "message": "No image uploaded"
         }), 400
 
-    file = request.files["image"]
 
     try:
+
+        file = request.files["image"]
 
         image = Image.open(
             file
         ).convert("RGB")
 
-        image_tensor = transform(image)
 
-        image_tensor = image_tensor.unsqueeze(0)
+        enhanced = ImageEnhance.Contrast(
+            image
+        ).enhance(1.25)
 
-        image_tensor = image_tensor.to(device)
 
-        with torch.no_grad():
+        enhanced = ImageEnhance.Sharpness(
+            enhanced
+        ).enhance(1.2)
 
-            output = model(image_tensor)
-
-            probabilities = F.softmax(
-                output,
-                dim=1
-            )
-
-        probabilities = probabilities[0]
-
-        predicted_grade = torch.argmax(
-            probabilities
-        ).item()
-
-        confidence = probabilities[
-            predicted_grade
-        ].item()
-
-        # Grade 2 + Grade 3 + Grade 4
-        referable_probability = probabilities[
-            2:
-        ].sum().item()
-
-        if referable_probability >= 0.50:
-
-            referable = True
-            diagnosis = "Referable DR"
-
-        else:
-
-            referable = False
-            diagnosis = "Non-referable DR"
 
         return jsonify({
 
             "success": True,
 
-            "grade": predicted_grade,
+            "image": image_to_base64(
+                enhanced
+            )
 
-            "confidence": round(
-                confidence * 100,
-                2
-            ),
-
-            "referable_probability": round(
-                referable_probability * 100,
-                2
-            ),
-
-            "referable": referable,
-
-            "diagnosis": diagnosis
         })
 
+
     except Exception as e:
+
+        print(
+            "Enhancement error:",
+            e
+        )
+
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
+
+# =========================================================
+# PREDICTION
+# =========================================================
+
+@app.route("/predict", methods=["POST"])
+def predict():
+
+    if "image" not in request.files:
+
+        return jsonify({
+            "success": False,
+            "message": "No image uploaded"
+        }), 400
+
+
+    try:
+
+        image, tensor = prepare_image(
+            request.files["image"]
+        )
+
+
+        with torch.no_grad():
+
+            output = model(
+                tensor
+            )
+
+            probabilities = F.softmax(
+                output,
+                dim=1
+            )[0]
+
+
+        predicted_class = int(
+            torch.argmax(
+                probabilities
+            ).item()
+        )
+
+
+        confidence = float(
+            probabilities[
+                predicted_class
+            ].item()
+        )
+
+
+        referable_probability = float(
+            probabilities[2:].sum().item()
+        )
+
+
+        referable = (
+            referable_probability >= 0.50
+        )
+
+
+        diagnoses = {
+
+            0:
+                "No Diabetic Retinopathy",
+
+            1:
+                "Mild Diabetic Retinopathy",
+
+            2:
+                "Moderate Diabetic Retinopathy",
+
+            3:
+                "Severe Diabetic Retinopathy",
+
+            4:
+                "Proliferative Diabetic Retinopathy"
+
+        }
+
+
+        diagnosis = diagnoses[
+            predicted_class
+        ]
+
+
+        return jsonify({
+
+            "success": True,
+
+            "grade":
+                predicted_class,
+
+            "diagnosis":
+                diagnosis,
+
+            "confidence":
+                confidence,
+
+            "referable_probability":
+                referable_probability,
+
+            "referable":
+                referable,
+
+            "probabilities": [
+
+                float(x.item())
+
+                for x in probabilities
+
+            ]
+
+        })
+
+
+    except Exception as e:
+
+        print(
+            "Prediction error:",
+            e
+        )
 
         return jsonify({
 
             "success": False,
 
-            "error": str(e)
+            "message":
+                str(e)
 
         }), 500
 
 
-# =====================================================
+# =========================================================
+# GRAD-CAM + IMAGE PERSISTENCE
+# =========================================================
+
+@app.route("/gradcam", methods=["POST"])
+def gradcam():
+
+    if "image" not in request.files:
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                "No image uploaded"
+
+        }), 400
+
+
+    try:
+
+        file = request.files["image"]
+
+        patient_id = request.form.get(
+            "patient_id",
+            ""
+        ).strip()
+
+
+        image = Image.open(
+            file
+        ).convert("RGB")
+
+
+        tensor = transform(
+            image
+        ).unsqueeze(0)
+
+        tensor = tensor.to(device)
+
+
+        activations = []
+
+        gradients = []
+
+
+        target_layer = model.features[-1]
+
+
+        def forward_hook(
+            module,
+            input,
+            output
+        ):
+
+            activations.append(
+                output
+            )
+
+
+        def backward_hook(
+            module,
+            grad_input,
+            grad_output
+        ):
+
+            gradients.append(
+                grad_output[0]
+            )
+
+
+        forward_handle = (
+            target_layer.register_forward_hook(
+                forward_hook
+            )
+        )
+
+
+        backward_handle = (
+            target_layer.register_full_backward_hook(
+                backward_hook
+            )
+        )
+
+
+        model.zero_grad()
+
+
+        output = model(
+            tensor
+        )
+
+
+        predicted_class = output.argmax(
+            dim=1
+        ).item()
+
+
+        score = output[
+            0,
+            predicted_class
+        ]
+
+
+        score.backward()
+
+
+        forward_handle.remove()
+
+        backward_handle.remove()
+
+
+        activation = activations[0]
+
+        gradient = gradients[0]
+
+
+        weights = gradient.mean(
+            dim=(2, 3),
+            keepdim=True
+        )
+
+
+        cam = (
+            weights * activation
+        ).sum(dim=1)
+
+
+        cam = F.relu(
+            cam
+        )
+
+
+        cam = (
+            cam.squeeze()
+            .detach()
+            .cpu()
+        )
+
+
+        cam -= cam.min()
+
+
+        if cam.max() > 0:
+
+            cam /= cam.max()
+
+
+        import numpy as np
+
+
+        cam = cam.numpy()
+
+
+        cam_image = Image.fromarray(
+            np.uint8(
+                cam * 255
+            )
+        )
+
+
+        cam_image = cam_image.resize(
+            image.size
+        )
+
+
+        cam_array = np.array(
+            cam_image
+        )
+
+
+        original_array = np.array(
+            image
+        )
+
+
+        heatmap = np.zeros_like(
+            original_array
+        )
+
+
+        heatmap[:, :, 0] = cam_array
+
+        heatmap[:, :, 1] = (
+            cam_array // 3
+        )
+
+
+        overlay = (
+
+            0.55 * original_array
+
+            +
+
+            0.45 * heatmap
+
+        )
+
+
+        overlay = np.uint8(
+            np.clip(
+                overlay,
+                0,
+                255
+            )
+        )
+
+
+        overlay_image = Image.fromarray(
+            overlay
+        )
+
+
+        # =================================================
+        # CREATE PER-SCREENING STORAGE
+        # =================================================
+
+        screening_folder, folder_name = (
+            create_screening_folder()
+        )
+
+
+        # =================================================
+        # SAVE ORIGINAL IMAGE
+        # =================================================
+
+        original_filename = (
+            "original.jpg"
+        )
+
+
+        original_path = save_image(
+            image,
+            screening_folder,
+            original_filename
+        )
+
+
+        # =================================================
+        # SAVE GRAD-CAM IMAGE
+        # =================================================
+
+        gradcam_filename = (
+            "gradcam.jpg"
+        )
+
+
+        gradcam_path = save_image(
+            overlay_image,
+            screening_folder,
+            gradcam_filename
+        )
+
+
+        # =================================================
+        # DATABASE / URL PATHS
+        # =================================================
+
+        image_relative_path = (
+            f"uploads/screenings/"
+            f"{folder_name}/"
+            f"{original_filename}"
+        )
+
+
+        gradcam_relative_path = (
+            f"uploads/screenings/"
+            f"{folder_name}/"
+            f"{gradcam_filename}"
+        )
+
+
+        # =================================================
+        # RESPONSE
+        # =================================================
+
+        return jsonify({
+
+            "success": True,
+
+            "original_image":
+                image_to_base64(
+                    image
+                ),
+
+            "gradcam_image":
+                image_to_base64(
+                    overlay_image
+                ),
+
+            "image":
+                image_to_base64(
+                    overlay_image
+                ),
+
+            "predicted_class":
+                predicted_class,
+
+            "image_path":
+                image_relative_path,
+
+            "gradcam_path":
+                gradcam_relative_path,
+
+            "patient_id":
+                patient_id
+
+        })
+
+
+    except Exception as e:
+
+        print(
+            "Grad-CAM error:",
+            e
+        )
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                str(e)
+
+        }), 500
+
+
+# =========================================================
+# SERVE STORED SCREENING IMAGES
+# =========================================================
+
+@app.route(
+    "/uploads/<path:filename>",
+    methods=["GET"]
+)
+def serve_upload(filename):
+
+    return send_from_directory(
+        UPLOAD_DIR,
+        filename
+    )
+
+
+# =========================================================
+# CREATE PATIENT
+# =========================================================
+
+@app.route("/patients", methods=["POST"])
+def create_patient():
+
+    data = request.get_json()
+
+    if not data:
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                "Request body is required"
+
+        }), 400
+
+
+    name = data.get(
+        "name",
+        ""
+    ).strip()
+
+    age = data.get(
+        "age"
+    )
+
+    gender = data.get(
+        "gender",
+        ""
+    )
+
+    phone = data.get(
+        "phone",
+        ""
+    )
+
+
+    if not name:
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                "Patient name is required"
+
+        }), 400
+
+
+    try:
+
+        conn = get_connection()
+
+
+        last_patient = conn.execute(
+            """
+            SELECT patient_id
+            FROM patients
+            ORDER BY id DESC
+            LIMIT 1
+            """
+        ).fetchone()
+
+
+        if last_patient:
+
+            try:
+
+                last_number = int(
+                    last_patient[
+                        "patient_id"
+                    ].replace(
+                        "PAT-",
+                        ""
+                    )
+                )
+
+                new_number = (
+                    last_number + 1
+                )
+
+            except:
+
+                new_number = 1
+
+        else:
+
+            new_number = 1
+
+
+        patient_id = (
+            f"PAT-{new_number:04d}"
+        )
+
+
+        cursor = conn.execute(
+            """
+            INSERT INTO patients
+            (
+                patient_id,
+                name,
+                age,
+                gender,
+                phone
+            )
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                patient_id,
+                name,
+                age,
+                gender,
+                phone
+            )
+        )
+
+
+        conn.commit()
+
+
+        patient = conn.execute(
+            """
+            SELECT *
+            FROM patients
+            WHERE id = ?
+            """,
+            (
+                cursor.lastrowid,
+            )
+        ).fetchone()
+
+
+        conn.close()
+
+
+        return jsonify({
+
+            "success": True,
+
+            "message":
+                "Patient created successfully",
+
+            "patient":
+                dict(patient)
+
+        }), 201
+
+
+    except Exception as e:
+
+        print(
+            "Create patient error:",
+            e
+        )
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                str(e)
+
+        }), 500
+
+
+# =========================================================
+# GET ALL PATIENTS
+# =========================================================
+
+@app.route("/patients", methods=["GET"])
+def get_patients():
+
+    try:
+
+        conn = get_connection()
+
+
+        patients = conn.execute(
+            """
+            SELECT
+                p.*,
+                COUNT(s.id) AS total_scans
+            FROM patients p
+            LEFT JOIN screenings s
+                ON p.patient_id = s.patient_id
+            GROUP BY p.id
+            ORDER BY p.id DESC
+            """
+        ).fetchall()
+
+
+        conn.close()
+
+
+        return jsonify({
+
+            "success": True,
+
+            "patients": [
+
+                dict(patient)
+
+                for patient in patients
+
+            ]
+
+        })
+
+
+    except Exception as e:
+
+        print(
+            "Get patients error:",
+            e
+        )
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                str(e)
+
+        }), 500
+
+
+# =========================================================
+# GET SINGLE PATIENT
+# =========================================================
+
+@app.route(
+    "/patients/<patient_id>",
+    methods=["GET"]
+)
+def get_patient(patient_id):
+
+    try:
+
+        conn = get_connection()
+
+
+        patient = conn.execute(
+            """
+            SELECT *
+            FROM patients
+            WHERE patient_id = ?
+            """,
+            (
+                patient_id,
+            )
+        ).fetchone()
+
+
+        if not patient:
+
+            conn.close()
+
+            return jsonify({
+
+                "success": False,
+
+                "message":
+                    "Patient not found"
+
+            }), 404
+
+
+        screenings = conn.execute(
+            """
+            SELECT *
+            FROM screenings
+            WHERE patient_id = ?
+            ORDER BY created_at DESC
+            """,
+            (
+                patient_id,
+            )
+        ).fetchall()
+
+
+        conn.close()
+
+
+        return jsonify({
+
+            "success": True,
+
+            "patient":
+                dict(patient),
+
+            "screenings": [
+
+                dict(screening)
+
+                for screening in screenings
+
+            ]
+
+        })
+
+
+    except Exception as e:
+
+        print(
+            "Get patient error:",
+            e
+        )
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                str(e)
+
+        }), 500
+
+
+# =========================================================
+# CREATE SCREENING
+# =========================================================
+
+@app.route(
+    "/screenings",
+    methods=["POST"]
+)
+def create_screening():
+
+    data = request.get_json()
+
+    if not data:
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                "Request body is required"
+
+        }), 400
+
+
+    patient_id = data.get(
+        "patient_id"
+    )
+
+
+    if not patient_id:
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                "patient_id is required"
+
+        }), 400
+
+
+    try:
+
+        conn = get_connection()
+
+
+        patient = conn.execute(
+            """
+            SELECT id
+            FROM patients
+            WHERE patient_id = ?
+            """,
+            (
+                patient_id,
+            )
+        ).fetchone()
+
+
+        if not patient:
+
+            conn.close()
+
+            return jsonify({
+
+                "success": False,
+
+                "message":
+                    "Patient not found"
+
+            }), 404
+
+
+        cursor = conn.execute(
+            """
+            INSERT INTO screenings
+            (
+                patient_id,
+                image_path,
+                grade,
+                diagnosis,
+                confidence,
+                referable_probability,
+                referable,
+                gradcam_path
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                patient_id,
+
+                data.get(
+                    "image_path"
+                ),
+
+                data.get(
+                    "grade"
+                ),
+
+                data.get(
+                    "diagnosis"
+                ),
+
+                data.get(
+                    "confidence"
+                ),
+
+                data.get(
+                    "referable_probability"
+                ),
+
+                data.get(
+                    "referable",
+                    0
+                ),
+
+                data.get(
+                    "gradcam_path"
+                )
+
+            )
+        )
+
+
+        conn.commit()
+
+
+        screening = conn.execute(
+            """
+            SELECT *
+            FROM screenings
+            WHERE id = ?
+            """,
+            (
+                cursor.lastrowid,
+            )
+        ).fetchone()
+
+
+        conn.close()
+
+
+        return jsonify({
+
+            "success": True,
+
+            "message":
+                "Screening saved successfully",
+
+            "screening":
+                dict(screening)
+
+        }), 201
+
+
+    except Exception as e:
+
+        print(
+            "Create screening error:",
+            e
+        )
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                str(e)
+
+        }), 500
+
+
+# =========================================================
+# GET PATIENT SCREENINGS
+# =========================================================
+
+@app.route(
+    "/screenings/<patient_id>",
+    methods=["GET"]
+)
+def get_screenings(patient_id):
+
+    try:
+
+        conn = get_connection()
+
+
+        screenings = conn.execute(
+            """
+            SELECT *
+            FROM screenings
+            WHERE patient_id = ?
+            ORDER BY created_at DESC
+            """,
+            (
+                patient_id,
+            )
+        ).fetchall()
+
+
+        conn.close()
+
+
+        return jsonify({
+
+            "success": True,
+
+            "screenings": [
+
+                dict(screening)
+
+                for screening in screenings
+
+            ]
+
+        })
+
+
+    except Exception as e:
+
+        print(
+            "Get screenings error:",
+            e
+        )
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                str(e)
+
+        }), 500
+
+
+# =========================================================
+# DASHBOARD STATS
+# =========================================================
+
+@app.route(
+    "/dashboard/stats",
+    methods=["GET"]
+)
+def dashboard_stats():
+
+    try:
+
+        conn = get_connection()
+
+
+        total_patients = conn.execute(
+            """
+            SELECT COUNT(*)
+            AS count
+            FROM patients
+            """
+        ).fetchone()["count"]
+
+
+        total_scans = conn.execute(
+            """
+            SELECT COUNT(*)
+            AS count
+            FROM screenings
+            """
+        ).fetchone()["count"]
+
+
+        total_referrals = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM screenings
+            WHERE referable = 1
+            """
+        ).fetchone()[0]
+
+
+        recent_patients = conn.execute(
+            """
+            SELECT
+                p.patient_id,
+                p.name,
+                p.age,
+                p.gender,
+                p.created_at,
+                s.diagnosis,
+                s.confidence
+            FROM patients p
+            LEFT JOIN screenings s
+                ON s.id = (
+                    SELECT id
+                    FROM screenings
+                    WHERE patient_id = p.patient_id
+                    ORDER BY created_at DESC
+                    LIMIT 1
+                )
+            ORDER BY p.id DESC
+            LIMIT 5
+            """
+        ).fetchall()
+
+
+        conn.close()
+
+
+        return jsonify({
+
+            "success": True,
+
+            "stats": {
+
+                "total_patients":
+                    total_patients,
+
+                "total_screenings":
+                    total_scans,
+
+                "total_referrals":
+                    total_referrals
+
+            },
+
+            "recent_patients": [
+
+                dict(patient)
+
+                for patient in recent_patients
+
+            ]
+
+        })
+
+
+    except Exception as e:
+
+        print(
+            "Dashboard stats error:",
+            e
+        )
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                str(e)
+
+        }), 500
+
+
+# =========================================================
+# GET SINGLE SCREENING
+# =========================================================
+
+@app.route(
+    "/screening/<int:screening_id>",
+    methods=["GET"]
+)
+def get_screening(screening_id):
+
+    try:
+
+        conn = get_connection()
+
+
+        screening = conn.execute(
+            """
+            SELECT
+                id,
+                patient_id,
+                image_path,
+                grade,
+                diagnosis,
+                confidence,
+                referable_probability,
+                referable,
+                gradcam_path,
+                created_at
+            FROM screenings
+            WHERE id = ?
+            """,
+            (
+                screening_id,
+            )
+        ).fetchone()
+
+
+        conn.close()
+
+
+        if not screening:
+
+            return jsonify({
+
+                "success": False,
+
+                "message":
+                    "Screening not found"
+
+            }), 404
+
+
+        return jsonify({
+
+            "success": True,
+
+            "screening":
+                dict(screening)
+
+        })
+
+
+    except Exception as e:
+
+        print(
+            "Get screening error:",
+            e
+        )
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                "Unable to load screening"
+
+        }), 500
+
+
+# =========================================================
+# GET ALL SCREENINGS
+# =========================================================
+
+@app.route(
+    "/screenings",
+    methods=["GET"]
+)
+def get_all_screenings():
+
+    try:
+
+        conn = get_connection()
+
+
+        screenings = conn.execute(
+            """
+            SELECT
+                s.id,
+                s.patient_id,
+                s.image_path,
+                s.grade,
+                s.diagnosis,
+                s.confidence,
+                s.referable_probability,
+                s.referable,
+                s.gradcam_path,
+                s.created_at,
+                p.name AS patient_name,
+                p.age AS patient_age,
+                p.gender AS patient_gender
+            FROM screenings s
+            LEFT JOIN patients p
+                ON s.patient_id = p.patient_id
+            ORDER BY
+                s.created_at DESC,
+                s.id DESC
+            """
+        ).fetchall()
+
+
+        conn.close()
+
+
+        return jsonify({
+
+            "success": True,
+
+            "screenings": [
+
+                dict(screening)
+
+                for screening in screenings
+
+            ]
+
+        })
+
+
+    except Exception as e:
+
+        print(
+            "Get all screenings error:",
+            e
+        )
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                "Unable to load screening reports"
+
+        }), 500
+
+
+# =========================================================
+# ANALYTICS
+# =========================================================
+
+@app.route(
+    "/analytics",
+    methods=["GET"]
+)
+def analytics():
+
+    try:
+
+        conn = get_connection()
+
+
+        total_patients = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM patients
+            """
+        ).fetchone()[0]
+
+
+        total_screenings = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM screenings
+            """
+        ).fetchone()[0]
+
+
+        referable_cases = conn.execute(
+            """
+            SELECT COUNT(*)
+            FROM screenings
+            WHERE referable = 1
+            """
+        ).fetchone()[0]
+
+
+        non_referable_cases = (
+            total_screenings -
+            referable_cases
+        )
+
+
+        average_confidence = conn.execute(
+            """
+            SELECT AVG(confidence)
+            FROM screenings
+            """
+        ).fetchone()[0]
+
+
+        if average_confidence is None:
+
+            average_confidence = 0
+
+
+        grade_rows = conn.execute(
+            """
+            SELECT
+                grade,
+                COUNT(*) AS count
+            FROM screenings
+            GROUP BY grade
+            ORDER BY grade ASC
+            """
+        ).fetchall()
+
+
+        grade_distribution = {
+
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0
+
+        }
+
+
+        for row in grade_rows:
+
+            if row["grade"] is not None:
+
+                grade_distribution[
+                    str(row["grade"])
+                ] = row["count"]
+
+
+        monthly_rows = conn.execute(
+            """
+            SELECT
+                strftime(
+                    '%Y-%m',
+                    created_at
+                ) AS month,
+
+                COUNT(*) AS count
+
+            FROM screenings
+
+            GROUP BY month
+
+            ORDER BY month ASC
+
+            LIMIT 12
+            """
+        ).fetchall()
+
+
+        monthly_activity = [
+
+            {
+                "month":
+                    row["month"],
+
+                "count":
+                    row["count"]
+            }
+
+            for row in monthly_rows
+
+        ]
+
+
+        diagnosis_rows = conn.execute(
+            """
+            SELECT
+                diagnosis,
+                COUNT(*) AS count
+            FROM screenings
+            WHERE diagnosis IS NOT NULL
+            GROUP BY diagnosis
+            ORDER BY count DESC
+            """
+        ).fetchall()
+
+
+        diagnosis_distribution = [
+
+            {
+                "diagnosis":
+                    row["diagnosis"],
+
+                "count":
+                    row["count"]
+            }
+
+            for row in diagnosis_rows
+
+        ]
+
+
+        if total_screenings > 0:
+
+            referable_percentage = (
+
+                referable_cases /
+                total_screenings
+
+            ) * 100
+
+        else:
+
+            referable_percentage = 0
+
+
+        conn.close()
+
+
+        return jsonify({
+
+            "success": True,
+
+            "analytics": {
+
+                "total_patients":
+                    total_patients,
+
+                "total_screenings":
+                    total_screenings,
+
+                "referable_cases":
+                    referable_cases,
+
+                "non_referable_cases":
+                    non_referable_cases,
+
+                "referable_percentage":
+                    round(
+                        referable_percentage,
+                        2
+                    ),
+
+                "average_confidence":
+                    round(
+                        average_confidence,
+                        4
+                    ),
+
+                "grade_distribution":
+                    grade_distribution,
+
+                "monthly_activity":
+                    monthly_activity,
+
+                "diagnosis_distribution":
+                    diagnosis_distribution
+
+            }
+
+        })
+
+
+    except Exception as e:
+
+        print(
+            "Analytics error:",
+            e
+        )
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+                "Unable to load analytics data"
+
+        }), 500
+
+
+# =========================================================
 # START SERVER
-# =====================================================
+# =========================================================
 
 if __name__ == "__main__":
 
-    print("===================================")
-    print("       RetinaAI Backend")
-    print("===================================")
-    print("Model device:", device)
-    print("Server starting...")
-    print("URL: http://127.0.0.1:5000")
-    print("===================================")
+    print("")
+
+    print("========================================")
+    print("        RETINAAI BACKEND SERVER")
+    print("========================================")
+    print("Server: http://127.0.0.1:5000")
+    print("Database: SQLite")
+    print("AI Model: EfficientNet-B0")
+    print(
+        "Image Storage:",
+        SCREENING_DIR
+    )
+    print("========================================")
+
+    print("")
+
 
     app.run(
         host="0.0.0.0",
         port=5000,
         debug=True
     )
-
