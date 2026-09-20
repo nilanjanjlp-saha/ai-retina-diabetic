@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:5000";
+const API_URL = "https://retinaai-backend-5h1p.onrender.com";
 
 
 // =========================================================
@@ -206,8 +206,10 @@ signupForm.addEventListener(
         }
 
 
-        if (!email.includes("@") ||
-            !email.includes(".")) {
+        if (
+            !email.includes("@") ||
+            !email.includes(".")
+        ) {
 
             showError(
                 "Please enter a valid email address."
@@ -351,8 +353,7 @@ signupForm.addEventListener(
 
 
             showError(
-                "Unable to connect to RetinaAI server. " +
-                "Make sure the backend is running."
+                "Unable to connect to RetinaAI server. Please try again."
             );
 
 
